@@ -1,11 +1,13 @@
 import { useState, type ChangeEvent, type InputHTMLAttributes } from "react";
 import SearchIcon from "../icons/SearchIcon";
+import InformationLabel from "./InformationLabel";
 
 type InformationSearchInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "size" | "onChange"
 > & {
   label: string;
+  caption?: string;
   onRightClick?: () => void;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   containerClassName?: string;
@@ -13,6 +15,7 @@ type InformationSearchInputProps = Omit<
 
 const InformationSearchInput = ({
   label,
+  caption,
   onRightClick,
   onChange,
   id,
@@ -33,9 +36,7 @@ const InformationSearchInput = ({
 
   return (
     <div className={`flex flex-col gap-[18px] ${containerClassName}`}>
-      <label htmlFor={id} className="typo-job-label text-text-black">
-        {label}
-      </label>
+      <InformationLabel htmlFor={id} label={label} caption={caption} />
 
       <div
         className="
