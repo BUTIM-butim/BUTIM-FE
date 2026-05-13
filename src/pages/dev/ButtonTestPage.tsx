@@ -4,6 +4,7 @@ import UnderlineButton from "../../components/common/button/UnderlineButton";
 import OutlineButton from "../../components/common/button/OutlineButton";
 import CheckButton from "../../components/common/check/CheckButton";
 import CloseIcon from "../../components/common/icons/CloseIcon";
+import VisibilityIcon from "../../components/common/icons/VisibilityIcon";
 
 const ButtonTestPage = () => {
   const [smallGrayChecked, setSmallGrayChecked] = useState(false);
@@ -11,6 +12,7 @@ const ButtonTestPage = () => {
   const [largeChecked, setLargeChecked] = useState(false);
   const [strategyBlueChecked, setStrategyBlueChecked] = useState(false);
   const [strategyGreenChecked, setStrategyGreenChecked] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
     <main className="min-h-screen bg-background-blue p-10">
@@ -179,6 +181,26 @@ const ButtonTestPage = () => {
         <div>
           <p className="mb-3 text-text-gray">Close Icon</p>
           <CloseIcon />
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Visibility Icon</p>
+          <div className="flex items-center gap-6">
+            <button
+              type="button"
+              onClick={() => setPasswordVisible((prev) => !prev)}
+              aria-label={passwordVisible ? "비밀번호 숨기기" : "비밀번호 보기"}
+            >
+              <VisibilityIcon visible={passwordVisible} />
+            </button>
+
+            <span className="text-text-gray">
+              현재 상태:{" "}
+              {passwordVisible
+                ? "비밀번호 보임 / On"
+                : "비밀번호 안 보임 / Off"}
+            </span>
+          </div>
         </div>
       </section>
     </main>
