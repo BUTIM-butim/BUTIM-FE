@@ -29,6 +29,9 @@ const InformationSearchInput = ({
     defaultValue ? String(defaultValue) : "",
   );
 
+  const currentValue = value !== undefined ? String(value) : inputValue;
+  const isActive = currentValue.trim().length > 0;
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
     onChange?.(event);
@@ -39,10 +42,14 @@ const InformationSearchInput = ({
       <InformationLabel htmlFor={id} label={label} caption={caption} />
 
       <div
-        className="
+        className={`
           flex h-[47px] w-[475px] items-center rounded-[10px] p-[1.3px]
-          bg-gradient-to-r from-[#0070FC] via-[#0099B8] to-[#00A89C]
-        "
+          ${
+            isActive
+              ? "bg-gradient-to-r from-[#0070FC] via-[#0099B8] to-[#00A89C]"
+              : "bg-line-gray"
+          }
+        `}
       >
         <div className="flex h-full w-full items-center rounded-[8.7px] bg-white px-[16px]">
           <input
