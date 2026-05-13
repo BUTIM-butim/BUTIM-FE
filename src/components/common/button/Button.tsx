@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import GoIcon from "./icons/GoIcon";
+import GoIcon from "../icons/GoIcon";
 
 type ButtonVariant = "blue" | "green" | "gray";
 type ButtonSize = "hero" | "card" | "popup" | "information" | "login";
@@ -71,7 +71,7 @@ const Button = ({
         transition-all duration-200
         disabled:cursor-not-allowed disabled:opacity-60
 
-        before:absolute before:inset-0 before:z-0 before:rounded-[inherit]
+        before:pointer-events-none before:absolute before:inset-0 before:z-20 before:rounded-[inherit]
         before:bg-white before:opacity-0 before:transition-opacity before:duration-200
         hover:before:opacity-[0.14]
 
