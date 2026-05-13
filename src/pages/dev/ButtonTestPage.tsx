@@ -1,5 +1,6 @@
 import Button from "../../components/common/button/Button";
 import UnderlineButton from "../../components/common/button/UnderlineButton";
+import OutlineButton from "../../components/common/button/OutlineButton";
 
 const ButtonTestPage = () => {
   return (
@@ -76,6 +77,33 @@ const ButtonTestPage = () => {
         <div>
           <p className="mb-3 text-text-gray">Underline Large</p>
           <UnderlineButton size="large">Button</UnderlineButton>
+        </div>
+        <div className="w-[320px]">
+          <p className="mb-3 text-text-gray">Outline SignIn / Default</p>
+          <OutlineButton size="signIn" isActive={false}>
+            Button
+          </OutlineButton>
+        </div>
+
+        <div className="w-[320px]">
+          <p className="mb-3 text-text-gray">Outline SignIn / Active</p>
+          <OutlineButton size="signIn" isActive>
+            Button
+          </OutlineButton>
+        </div>
+
+        <div className="w-[320px]">
+          <p className="mb-3 text-text-gray">Outline Information / Default</p>
+          <OutlineButton size="information" isActive={false}>
+            Button
+          </OutlineButton>
+        </div>
+
+        <div className="w-[320px]">
+          <p className="mb-3 text-text-gray">Outline Information / Active</p>
+          <OutlineButton size="information" isActive>
+            Button
+          </OutlineButton>
         </div>
       </section>
     </main>
