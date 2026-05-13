@@ -5,6 +5,7 @@ import OutlineButton from "../../components/common/button/OutlineButton";
 import CheckButton from "../../components/common/check/CheckButton";
 import CloseIcon from "../../components/common/icons/CloseIcon";
 import VisibilityIcon from "../../components/common/icons/VisibilityIcon";
+import WarningIcon from "../../components/common/icons/WarningIcon";
 
 const ButtonTestPage = () => {
   const [smallGrayChecked, setSmallGrayChecked] = useState(false);
@@ -200,6 +201,14 @@ const ButtonTestPage = () => {
                 ? "비밀번호 보임 / On"
                 : "비밀번호 안 보임 / Off"}
             </span>
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Warning Icon</p>
+          <div className="flex items-center gap-[4px] text-warning-red">
+            <WarningIcon />
+            <span className="typo-warning-text">유효성 검사 문구입니다.</span>
           </div>
         </div>
       </section>
