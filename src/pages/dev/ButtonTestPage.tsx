@@ -3,6 +3,7 @@ import Button from "../../components/common/button/Button";
 import UnderlineButton from "../../components/common/button/UnderlineButton";
 import OutlineButton from "../../components/common/button/OutlineButton";
 import CheckButton from "../../components/common/check/CheckButton";
+import CloseIcon from "../../components/common/icons/CloseIcon";
 
 const ButtonTestPage = () => {
   const [smallGrayChecked, setSmallGrayChecked] = useState(false);
@@ -173,6 +174,11 @@ const ButtonTestPage = () => {
             />
             <span className="text-text-gray">클릭해서 상태 확인</span>
           </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Close Icon</p>
+          <CloseIcon />
         </div>
       </section>
     </main>
