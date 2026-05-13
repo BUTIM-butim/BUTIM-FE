@@ -1,8 +1,16 @@
+import { useState } from "react";
 import Button from "../../components/common/button/Button";
 import UnderlineButton from "../../components/common/button/UnderlineButton";
 import OutlineButton from "../../components/common/button/OutlineButton";
+import CheckButton from "../../components/common/check/CheckButton";
 
 const ButtonTestPage = () => {
+  const [smallGrayChecked, setSmallGrayChecked] = useState(false);
+  const [smallBlueChecked, setSmallBlueChecked] = useState(false);
+  const [largeChecked, setLargeChecked] = useState(false);
+  const [strategyBlueChecked, setStrategyBlueChecked] = useState(false);
+  const [strategyGreenChecked, setStrategyGreenChecked] = useState(false);
+
   return (
     <main className="min-h-screen bg-background-blue p-10">
       <h1 className="typo-card-title-bold mb-8 text-text-black">Button Test</h1>
@@ -78,6 +86,7 @@ const ButtonTestPage = () => {
           <p className="mb-3 text-text-gray">Underline Large</p>
           <UnderlineButton size="large">Button</UnderlineButton>
         </div>
+
         <div className="w-[320px]">
           <p className="mb-3 text-text-gray">Outline SignIn / Default</p>
           <OutlineButton size="signIn" isActive={false}>
@@ -104,6 +113,66 @@ const ButtonTestPage = () => {
           <OutlineButton size="information" isActive>
             Button
           </OutlineButton>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Check / Small Gray</p>
+          <div className="flex items-center gap-6">
+            <CheckButton
+              variant="smallGray"
+              checked={smallGrayChecked}
+              onClick={() => setSmallGrayChecked((prev) => !prev)}
+            />
+            <span className="text-text-gray">클릭해서 상태 확인</span>
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Check / Small Blue</p>
+          <div className="flex items-center gap-6">
+            <CheckButton
+              variant="smallBlue"
+              checked={smallBlueChecked}
+              onClick={() => setSmallBlueChecked((prev) => !prev)}
+            />
+            <span className="text-text-gray">클릭해서 상태 확인</span>
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Check / Large</p>
+          <div className="flex items-center gap-6">
+            <CheckButton
+              variant="large"
+              checked={largeChecked}
+              onClick={() => setLargeChecked((prev) => !prev)}
+            />
+            <span className="text-text-gray">클릭해서 상태 확인</span>
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Check / Strategy Blue</p>
+          <div className="flex items-center gap-6">
+            <CheckButton
+              variant="strategyBlue"
+              checked={strategyBlueChecked}
+              onClick={() => setStrategyBlueChecked((prev) => !prev)}
+            />
+            <span className="text-text-gray">클릭해서 상태 확인</span>
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Check / Strategy Green</p>
+          <div className="flex items-center gap-6">
+            <CheckButton
+              variant="strategyGreen"
+              checked={strategyGreenChecked}
+              onClick={() => setStrategyGreenChecked((prev) => !prev)}
+            />
+            <span className="text-text-gray">클릭해서 상태 확인</span>
+          </div>
         </div>
       </section>
     </main>
