@@ -1,8 +1,381 @@
+@import "tailwindcss";
+
+/* 디자인 토큰 */
+@theme {
+  /* Font */
+  --font-pretendard:
+    "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-dm-sans: "DM Sans", sans-serif;
+  --font-inter: "Inter", sans-serif;
+
+  /* Color Palette */
+  --color-white: #ffffff;
+
+  --color-background-blue: #f9fafc;
+  --color-background-green: #fafcf9;
+
+  --color-card-background-blue: #f2f6fe;
+  --color-card-background-green: #edf8f7;
+
+  --color-hover-gray: #f6f6f3;
+  --color-button-background-gray: #ebebeb;
+
+  --color-hero-text-blue: #458fd5;
+  --color-button-blue: #3778e3;
+  --color-text-blue: #1866dc;
+  --color-navbar-blue: #185dc5;
+
+  --color-button-green: #1bab8b;
+  --color-text-green: #149f70;
+  --color-dark-green: #118c62;
+
+  --color-progress-gray: #eaebef;
+  --color-line-gray: #c7ced9;
+  --color-placeholder-gray: #9ca3af;
+  --color-text-gray: #989ea9;
+
+  --color-button-gray: #7b8392;
+  --color-popup-gray: #6b7280;
+  --color-number-gray: #4e5a6c;
+  --color-title-gray: #475161;
+  --color-text-black: #1f2937;
+  --color-text-dark-gray: #686868;
+
+  --color-warning-red: #ef4444;
+
+  /* Shadow */
+  --shadow-card-blue: 0 4px 24px 0 rgba(69, 143, 213, 0.08);
+  --shadow-popup: 0 0 24.8px 2px rgba(31, 41, 55, 0.12);
+}
+
+/* Gradient */
+.progress-blue {
+  background: linear-gradient(90deg, #c4daff 0%, #3778e3 100%);
+}
+
+.logo-gradient {
+  background: linear-gradient(90deg, #0070fc 0%, #0099b8 50%, #00a89c 100%);
+}
+
+/* Typography */
+.typo-hero-title {
+  font-family: var(--font-pretendard);
+  font-size: 46px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-figure-bold {
+  font-family: var(--font-pretendard);
+  font-size: 45px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0.04em;
+}
+
+.typo-figure-extra {
+  font-family: var(--font-dm-sans);
+  font-size: 42px;
+  font-weight: 800;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-figure {
+  font-family: var(--font-pretendard);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.04em;
+}
+
+.typo-popup-title-2 {
+  font-family: var(--font-pretendard);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+.typo-popup-title {
+  font-family: var(--font-pretendard);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-card-title-bold {
+  font-family: var(--font-pretendard);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-inform-title-section {
+  font-family: var(--font-pretendard);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.04em;
+}
+
+.typo-card-title {
+  font-family: var(--font-pretendard);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-inform-popup-title {
+  font-family: var(--font-pretendard);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-inform-sub-section {
+  font-family: var(--font-pretendard);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-hero-body {
+  font-family: var(--font-pretendard);
+  font-size: 23px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.01em;
+}
+
+.typo-job-label {
+  font-family: var(--font-pretendard);
+  font-size: 23px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.01em;
+}
+
+.typo-cash {
+  font-family: var(--font-pretendard);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: 0;
+}
+
+.typo-card-body-semibold {
+  font-family: var(--font-pretendard);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -0.01em;
+}
+
+.typo-card-body-medium {
+  font-family: var(--font-pretendard);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.01em;
+}
+
+.typo-button-main-hero {
+  font-family: var(--font-pretendard);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-card-body {
+  font-family: var(--font-pretendard);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.01em;
+}
+
+.typo-caption-semibold {
+  font-family: var(--font-pretendard);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-button-main-card {
+  font-family: var(--font-pretendard);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-popup-body {
+  font-family: var(--font-pretendard);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+}
+
+.typo-popup-button {
+  font-family: var(--font-pretendard);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-sidebar-title-bold {
+  font-family: var(--font-pretendard);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 2.3;
+  letter-spacing: -0.02em;
+}
+
+.typo-job-sub-label {
+  font-family: var(--font-pretendard);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-navbar-button {
+  font-family: var(--font-pretendard);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-sidebar-title {
+  font-family: var(--font-pretendard);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 2.3;
+  letter-spacing: -0.02em;
+}
+
+.typo-sidebar-body {
+  font-family: var(--font-inter);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 2.3;
+  letter-spacing: 0;
+}
+
+.typo-inform-title-caption {
+  font-family: var(--font-pretendard);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+}
+
+.typo-login-label {
+  font-family: var(--font-pretendard);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-popup-caption {
+  font-family: var(--font-pretendard);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0;
+}
+
+.typo-notification-caption {
+  font-family: var(--font-pretendard);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.typo-login-input {
+  font-family: var(--font-pretendard);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-support-name {
+  font-family: var(--font-pretendard);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.typo-option-list-caption {
+  font-family: var(--font-pretendard);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-warning-text {
+  font-family: var(--font-pretendard);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.02em;
+}
+
+.typo-category {
+  font-family: var(--font-pretendard);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.typo-small-caption {
+  font-family: var(--font-pretendard);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.05em;
+}
+
+.typo-day {
+  font-family: var(--font-pretendard);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
 * {
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  -webkit-font-smoothing: antialiased; /* 피그마와의 폰트 일치를 위해 추가 - 삭제X */
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: var(--font-pretendard);
+  background-color: var(--color-background-blue);
+  color: var(--color-text-black);
 }
