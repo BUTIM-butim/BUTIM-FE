@@ -26,7 +26,22 @@ import InformationConfirmInput from "../../components/common/input/InformationCo
 import InformationSearchInput from "../../components/common/input/InformationSearchInput";
 import ValidationMessage from "../../components/common/input/ValidationMessage";
 
-import InformationOptionGroup from "../../components/common/option/InformationOptionGroup";
+import InformationOptionHalf from "../../components/common/option/InformationOptionHalf";
+import InformationOptionTwoColumn from "../../components/common/option/InformationOptionTwoColumn";
+import InformationOptionField from "../../components/common/option/InformationOptionField";
+
+const optionItems = [
+  { label: "Option 1", value: "Option 1" },
+  { label: "Option 2", value: "Option 2" },
+  { label: "Option 3", value: "Option 3" },
+  { label: "Option 4", value: "Option 4" },
+  { label: "Option 5", value: "Option 5" },
+  { label: "Option 6", value: "Option 6" },
+  { label: "Option 7", value: "Option 7" },
+  { label: "Option 8", value: "Option 8" },
+  { label: "Option 9", value: "Option 9" },
+  { label: "Option 10", value: "Option 10" },
+];
 
 const ButtonTestPage = () => {
   const [smallGrayChecked, setSmallGrayChecked] = useState(false);
@@ -38,10 +53,18 @@ const ButtonTestPage = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const [halfButtonValue, setHalfButtonValue] = useState("Option 1");
-  const [singleColumnValue, setSingleColumnValue] = useState("Option 2");
-  const [multipleColumnValue, setMultipleColumnValue] = useState<string[]>([
-    "Option 1",
-  ]);
+
+  const [singleTwoColumnValue, setSingleTwoColumnValue] = useState("Option 2");
+
+  const [multipleTwoColumnValue, setMultipleTwoColumnValue] = useState<
+    string[]
+  >(["Option 1"]);
+
+  const [singleFieldValue, setSingleFieldValue] = useState("");
+  const [multipleFieldValue, setMultipleFieldValue] = useState<string[]>([]);
+
+  const [showSingleFieldError, setShowSingleFieldError] = useState(false);
+  const [showMultipleFieldError, setShowMultipleFieldError] = useState(false);
 
   return (
     <main className="min-h-screen bg-background-blue p-10">
@@ -441,15 +464,79 @@ const ButtonTestPage = () => {
 
             <div>
               <p className="mb-3 text-text-gray">
-                Input / Information / Half Button
+                Button / Information / Half / Default
               </p>
-              <InformationOptionGroup
+              <InformationOptionHalf label="Option" value="default" />
+            </div>
+
+            <div>
+              <p className="mb-3 text-text-gray">
+                Button / Information / Half / Click
+              </p>
+              <InformationOptionHalf label="Option" value="click" selected />
+            </div>
+
+            <div>
+              <p className="mb-3 text-text-gray">
+                Button / Information / Half / Error
+              </p>
+              <InformationOptionHalf label="Option" value="error" error />
+            </div>
+
+            <div>
+              <p className="mb-3 text-text-gray">
+                Button / Information / Half / Interactive
+              </p>
+              <div className="space-y-3">
+                <InformationOptionHalf
+                  label="Option 1"
+                  value="Option 1"
+                  selected={halfButtonValue === "Option 1"}
+                  onClick={setHalfButtonValue}
+                />
+                <InformationOptionHalf
+                  label="Option 2"
+                  value="Option 2"
+                  selected={halfButtonValue === "Option 2"}
+                  onClick={setHalfButtonValue}
+                />
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-3 text-text-gray">
+                Button / Information / Two Column / Single
+              </p>
+              <InformationOptionTwoColumn
                 selectionMode="single"
-                columns={2}
-                buttonSize="half"
-                options={["Option 1", "Option 2"]}
-                value={halfButtonValue}
-                onChange={(value) => setHalfButtonValue(value as string)}
+                options={optionItems}
+                value={singleTwoColumnValue}
+                onChange={setSingleTwoColumnValue}
+              />
+            </div>
+
+            <div>
+              <p className="mb-3 text-text-gray">
+                Button / Information / Two Column / Multiple
+              </p>
+              <InformationOptionTwoColumn
+                selectionMode="multiple"
+                options={optionItems}
+                value={multipleTwoColumnValue}
+                onChange={setMultipleTwoColumnValue}
+              />
+            </div>
+
+            <div>
+              <p className="mb-3 text-text-gray">
+                Button / Information / Two Column / Error
+              </p>
+              <InformationOptionTwoColumn
+                selectionMode="single"
+                options={optionItems.slice(0, 4)}
+                value=""
+                error
+                onChange={(value) => console.log(value)}
               />
             </div>
 
@@ -457,34 +544,86 @@ const ButtonTestPage = () => {
               <p className="mb-3 text-text-gray">
                 Input / Information / Button Two Column / Single
               </p>
-              <InformationOptionGroup
-                selectionMode="single"
-                columns={2}
-                buttonSize="half"
-                options={["Option 1", "Option 2", "Option 3"]}
-                value={singleColumnValue}
-                onChange={(value) => setSingleColumnValue(value as string)}
-              />
+
+              <div className="space-y-4">
+                <InformationOptionField
+                  selectionMode="single"
+                  label="label"
+                  caption="Caption"
+                  options={optionItems}
+                  value={singleFieldValue}
+                  error={showSingleFieldError}
+                  errorMessage="유효성 검사 문구입니다."
+                  onChange={(value) => {
+                    setSingleFieldValue(value);
+                    setShowSingleFieldError(false);
+                  }}
+                />
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="blue"
+                    size="popup"
+                    onClick={() => setShowSingleFieldError(true)}
+                  >
+                    에러 확인
+                  </Button>
+
+                  <Button
+                    variant="gray"
+                    size="popup"
+                    onClick={() => {
+                      setSingleFieldValue("");
+                      setShowSingleFieldError(false);
+                    }}
+                  >
+                    초기화
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <div>
               <p className="mb-3 text-text-gray">
                 Input / Information / Button Two Column / Multiple
               </p>
-              <InformationOptionGroup
-                selectionMode="multiple"
-                columns={2}
-                buttonSize="half"
-                options={[
-                  "Option 1",
-                  "Option 2",
-                  "Option 3",
-                  "Option 4",
-                  "Option 5",
-                ]}
-                value={multipleColumnValue}
-                onChange={(value) => setMultipleColumnValue(value as string[])}
-              />
+
+              <div className="space-y-4">
+                <InformationOptionField
+                  selectionMode="multiple"
+                  label="label"
+                  caption="Caption"
+                  options={optionItems}
+                  value={multipleFieldValue}
+                  error={showMultipleFieldError}
+                  errorMessage="1개 이상 선택해주세요."
+                  onChange={(value) => {
+                    setMultipleFieldValue(value);
+                    setShowMultipleFieldError(false);
+                  }}
+                />
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="blue"
+                    size="popup"
+                    onClick={() => setShowMultipleFieldError(true)}
+                  >
+                    에러 확인
+                  </Button>
+
+                  <Button
+                    variant="gray"
+                    size="popup"
+                    onClick={() => {
+                      setMultipleFieldValue([]);
+                      setShowMultipleFieldError(false);
+                    }}
+                  >
+                    초기화
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
