@@ -1,4 +1,5 @@
-import Button from "../components/common/button/Button";
+import Button from "../../components/common/button/Button";
+import UnderlineButton from "../../components/common/button/UnderlineButton";
 
 const ButtonTestPage = () => {
   return (
@@ -63,8 +64,18 @@ const ButtonTestPage = () => {
         <div>
           <p className="mb-3 text-text-gray">Login</p>
           <Button variant="blue" size="login">
-            로그인
+            Button
           </Button>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Underline Small</p>
+          <UnderlineButton size="small">Button</UnderlineButton>
+        </div>
+
+        <div>
+          <p className="mb-3 text-text-gray">Underline Large</p>
+          <UnderlineButton size="large">Button</UnderlineButton>
         </div>
       </section>
     </main>
