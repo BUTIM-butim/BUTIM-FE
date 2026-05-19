@@ -1,11 +1,13 @@
 import { useState, type ChangeEvent, type InputHTMLAttributes } from "react";
 import SearchIcon from "../icons/SearchIcon";
+import InformationLabel from "./InformationLabel";
 
 type InformationSearchInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "size" | "onChange"
 > & {
   label: string;
+  caption?: string;
   onRightClick?: () => void;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   containerClassName?: string;
@@ -13,6 +15,7 @@ type InformationSearchInputProps = Omit<
 
 const InformationSearchInput = ({
   label,
+  caption,
   onRightClick,
   onChange,
   id,
@@ -26,6 +29,9 @@ const InformationSearchInput = ({
     defaultValue ? String(defaultValue) : "",
   );
 
+  const currentValue = value !== undefined ? String(value) : inputValue;
+  const isActive = currentValue.trim().length > 0;
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
     onChange?.(event);
@@ -33,15 +39,17 @@ const InformationSearchInput = ({
 
   return (
     <div className={`flex flex-col gap-[18px] ${containerClassName}`}>
-      <label htmlFor={id} className="typo-job-label text-text-black">
-        {label}
-      </label>
+      <InformationLabel htmlFor={id} label={label} caption={caption} />
 
       <div
-        className="
+        className={`
           flex h-[47px] w-[475px] items-center rounded-[10px] p-[1.3px]
-          bg-gradient-to-r from-[#0070FC] via-[#0099B8] to-[#00A89C]
-        "
+          ${
+            isActive
+              ? "bg-gradient-to-r from-[#0070FC] via-[#0099B8] to-[#00A89C]"
+              : "bg-line-gray"
+          }
+        `}
       >
         <div className="flex h-full w-full items-center rounded-[8.7px] bg-white px-[16px]">
           <input
