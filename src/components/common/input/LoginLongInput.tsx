@@ -27,10 +27,12 @@ const LoginLongInput = ({
   ...props
 }: LoginLongInputProps) => {
   const borderColor =
-    status === "error" ? "border-warning-red" : "border-line-gray";
+    status === "error"
+      ? "border-warning-red focus-within:border-warning-red"
+      : "border-line-gray focus-within:border-button-blue";
 
   return (
-    <div className={`flex w-[331px] flex-col gap-[14px] ${containerClassName}`}>
+    <div className={`flex w-[331px] flex-col gap-[10px] ${containerClassName}`}>
       <label htmlFor={id} className="typo-login-label text-text-black">
         {label}
       </label>
@@ -38,7 +40,7 @@ const LoginLongInput = ({
       <div
         className={`
           flex h-[43px] w-[331px] items-center rounded-[8px] border-[1.2px]
-          bg-white px-[13px]
+          bg-white px-[13px] transition-colors duration-150
           ${borderColor}
         `}
       >

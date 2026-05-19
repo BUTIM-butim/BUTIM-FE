@@ -12,7 +12,7 @@ const ValidationMessage = ({
   return (
     <p
       className={`
-        flex items-center gap-[2px] text-warning-red
+        flex h-[14px] items-center gap-[2px] text-warning-red
         ${className}
       `}
     >

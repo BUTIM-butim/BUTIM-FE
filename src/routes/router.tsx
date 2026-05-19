@@ -3,7 +3,7 @@ import { ROUTES } from "../constants/routes";
 
 import MainPage from "../pages/MainPage";
 import LoginPage from "../pages/auth/LoginPage";
-import SignupPage from "../pages/auth/SingupPage";
+import SignupPage from "../pages/auth/SignupPage";
 import ButtonTestPage from "../pages/dev/ButtonTestPage";
 
 export const router = createBrowserRouter([

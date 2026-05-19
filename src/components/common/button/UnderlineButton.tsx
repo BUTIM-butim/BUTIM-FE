@@ -28,6 +28,7 @@ const UnderlineButton = ({
         overflow-hidden
         text-hero-text-blue underline decoration-hero-text-blue underline-offset-[3px]
         transition-all duration-200
+        cursor-pointer
         disabled:cursor-not-allowed disabled:opacity-60
 
         before:pointer-events-none before:absolute before:inset-0 before:z-20

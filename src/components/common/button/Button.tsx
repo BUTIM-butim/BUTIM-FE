@@ -68,7 +68,8 @@ const Button = ({
       className={`
         relative isolate inline-flex items-center justify-center
         overflow-hidden
-        transition-all duration-200
+        transition-all duration-
+        cursor-pointer
         disabled:cursor-not-allowed disabled:opacity-60
 
         before:pointer-events-none before:absolute before:inset-0 before:z-20 before:rounded-[inherit]
