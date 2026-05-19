@@ -1,13 +1,19 @@
-import type { InputHTMLAttributes } from "react";
-import InputBase, { type InputStatus } from "./InputBase";
-import FieldLabel from "./FieldLabel";
+import {
+  type ChangeEvent,
+  type InputHTMLAttributes,
+  type ReactNode,
+} from "react";
+
+type LoginLongInputStatus = "default" | "error";
 
 type LoginLongInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  "size"
+  "size" | "onChange"
 > & {
   label: string;
-  status?: InputStatus;
+  status?: LoginLongInputStatus;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  rightElement?: ReactNode;
   containerClassName?: string;
 };
 
@@ -15,20 +21,43 @@ const LoginLongInput = ({
   label,
   status = "default",
   id,
+  rightElement,
   containerClassName = "",
+  className = "",
   ...props
 }: LoginLongInputProps) => {
-  return (
-    <div className={`flex flex-col gap-[10px] ${containerClassName}`}>
-      <FieldLabel htmlFor={id} label={label} variant="login" />
+  const borderColor =
+    status === "error" ? "border-warning-red" : "border-line-gray";
 
-      <InputBase
-        id={id}
-        inputSize="loginLong"
-        status={status}
-        textVariant="login"
-        {...props}
-      />
+  return (
+    <div className={`flex w-[331px] flex-col gap-[14px] ${containerClassName}`}>
+      <label htmlFor={id} className="typo-login-label text-text-black">
+        {label}
+      </label>
+
+      <div
+        className={`
+          flex h-[43px] w-[331px] items-center rounded-[8px] border-[1.2px]
+          bg-white px-[13px]
+          ${borderColor}
+        `}
+      >
+        <input
+          id={id}
+          className={`
+            typo-login-input h-full min-w-0 flex-1 bg-transparent
+            text-text-black placeholder:text-placeholder-gray outline-none
+            ${className}
+          `}
+          {...props}
+        />
+
+        {rightElement && (
+          <div className="ml-[8px] flex shrink-0 items-center justify-center">
+            {rightElement}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
