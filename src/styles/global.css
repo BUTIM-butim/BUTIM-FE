@@ -338,6 +338,14 @@
   letter-spacing: -0.02em;
 }
 
+.typo-terms-regular {
+  font-family: var(--font-pretendard);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
 .typo-category {
   font-family: var(--font-pretendard);
   font-size: 10px;
