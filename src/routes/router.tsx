@@ -5,6 +5,7 @@ import MainPage from "../pages/MainPage";
 import LoginPage from "../pages/auth/LoginPage";
 import SignupPage from "../pages/auth/SignupPage";
 import ButtonTestPage from "../pages/dev/ButtonTestPage";
+import ModalTestPage from "../pages/dev/ModalTestPage";
 
 export const router = createBrowserRouter([
   {
@@ -22,5 +23,9 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.BUTTON_TEST,
     element: <ButtonTestPage />,
+  },
+  {
+    path: "/dev/modal-test",
+    element: <ModalTestPage />,
   },
 ]);

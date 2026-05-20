@@ -81,6 +81,11 @@ const LoginCard = () => {
       localStorage.setItem("userName", loginData.name);
 
       navigate("/");
+
+      // TODO: 메인 페이지 구현 시 산재정보 입력 여부에 따라 화면 상태 분기 필요
+      // - 산재정보 입력 전: Main_로그인 후/정보 입력 전
+      // - 산재정보 입력 후: Main_로그인&정보 입력 후
+      // - 산재정보 입력 여부 기준 API: GET /api/accident-info/me
     } catch {
       setErrorMessage("이메일과 비밀번호를 정확히 입력해주세요.");
       setEmailStatus("error");
