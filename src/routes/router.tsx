@@ -7,8 +7,8 @@ import SignupPage from "../pages/auth/SignupPage";
 import ButtonTestPage from "../pages/dev/ButtonTestPage";
 import ModalTestPage from "../pages/dev/ModalTestPage";
 import UserEditPage from "../pages/user/UserEditPage";
-import FinancialInfoPage from "../pages/FinancialInfoPage";
-import FinancialSupportInfoPage from "../pages/FinancialSupportInfoPage";
+import FinancialInfoPage from "../pages/financial/FinancialInfoPage";
+import FinancialSupportInfoPage from "../pages/financial/FinancialSupportInfoPage";
 
 export const router = createBrowserRouter([
   {
