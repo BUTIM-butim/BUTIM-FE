@@ -6,6 +6,7 @@ import type {
   IncomeLevelEnum,
   EmploymentStatusEnum,
   HouseholdTypeEnum,
+  DependentTypeEnum,
 } from '../../types/financial';
 import { financialInfoApi } from '../../apis/financialInfo';
 import Header from '../../components/layout/Header';
@@ -250,7 +251,7 @@ export default function FinancialInfoPage() {
 
       dependentType:
         supportTarget.hasDependent === true && supportTarget.dependentType
-          ? supportTarget.dependentType
+          ? (supportTarget.dependentType as DependentTypeEnum)
           : undefined,
 
       hasChild:
