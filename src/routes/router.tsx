@@ -8,6 +8,7 @@ import ButtonTestPage from "../pages/dev/ButtonTestPage";
 import ModalTestPage from "../pages/dev/ModalTestPage";
 import UserEditPage from "../pages/user/UserEditPage";
 import FinancialInfoPage from "../pages/FinancialInfoPage";
+import FinancialSupportInfoPage from "../pages/FinancialSupportInfoPage";
 
 export const router = createBrowserRouter([
   {
@@ -37,5 +38,9 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.FINANCIAL_INFO,
     element: <FinancialInfoPage />,
+  },
+  {
+    path: ROUTES.FINANCIAL_SUPPORT_INFO,
+    element: <FinancialSupportInfoPage />,
   },
 ]);
