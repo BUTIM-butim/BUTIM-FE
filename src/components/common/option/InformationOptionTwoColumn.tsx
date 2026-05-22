@@ -1,4 +1,4 @@
-import InformationOptionHalf from "./InformationOptionHalf";
+import InformationOptionHalf from './InformationOptionHalf';
 
 export type InformationOptionItem = {
   label: string;
@@ -6,7 +6,7 @@ export type InformationOptionItem = {
 };
 
 type SingleOptionProps = {
-  selectionMode?: "single";
+  selectionMode?: 'single';
   options: InformationOptionItem[];
   value?: string;
   error?: boolean;
@@ -15,7 +15,7 @@ type SingleOptionProps = {
 };
 
 type MultipleOptionProps = {
-  selectionMode: "multiple";
+  selectionMode: 'multiple';
   options: InformationOptionItem[];
   value?: string[];
   error?: boolean;
@@ -28,7 +28,7 @@ type InformationOptionTwoColumnProps = SingleOptionProps | MultipleOptionProps;
 const InformationOptionTwoColumn = (props: InformationOptionTwoColumnProps) => {
   const { options, error = false, disabled = false } = props;
 
-  const isMultiple = props.selectionMode === "multiple";
+  const isMultiple = props.selectionMode === 'multiple';
 
   const hasValue = isMultiple
     ? Array.isArray(props.value) && props.value.length > 0
@@ -58,7 +58,7 @@ const InformationOptionTwoColumn = (props: InformationOptionTwoColumnProps) => {
   };
 
   return (
-    <div className="grid w-[671px] grid-cols-2 gap-x-[31px] gap-y-[14px]">
+    <div className="flex w-[671px] flex-row flex-wrap content-start items-center justify-between gap-y-[14px]">
       {options.map((option) => (
         <InformationOptionHalf
           key={option.value}
