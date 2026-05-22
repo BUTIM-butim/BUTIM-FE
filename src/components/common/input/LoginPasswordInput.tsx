@@ -23,7 +23,7 @@ const LoginPasswordInput = ({
 
   return (
     <div className={`flex flex-col gap-[10px] ${containerClassName}`}>
-      <FieldLabel htmlFor={id} label={label} variant="login" />
+      {label && <FieldLabel htmlFor={id} label={label} variant="login" />}
 
       <InputBase
         id={id}
