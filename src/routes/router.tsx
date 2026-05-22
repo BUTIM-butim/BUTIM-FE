@@ -7,6 +7,7 @@ import SignupPage from "../pages/auth/SignupPage";
 import ButtonTestPage from "../pages/dev/ButtonTestPage";
 import ModalTestPage from "../pages/dev/ModalTestPage";
 import UserEditPage from "../pages/user/UserEditPage";
+import FinancialInfoPage from "../pages/FinancialInfoPage";
 
 export const router = createBrowserRouter([
   {
@@ -32,5 +33,9 @@ export const router = createBrowserRouter([
   {
     path: "/user/edit",
     element: <UserEditPage />,
+  },
+  {
+    path: ROUTES.FINANCIAL_INFO,
+    element: <FinancialInfoPage />,
   },
 ]);
