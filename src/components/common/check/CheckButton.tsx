@@ -4,6 +4,7 @@ import CheckIcon from "../icons/CheckIcon";
 type CheckButtonVariant =
   | "smallGray"
   | "smallBlue"
+  | "smallWarning"
   | "large"
   | "strategyBlue"
   | "strategyGreen";

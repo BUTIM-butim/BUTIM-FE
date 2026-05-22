@@ -1,5 +1,5 @@
 import { axiosInstance } from "./axiosInstance";
-import type { LoginRequest, LoginResponse } from "../types/auth";
+import type { LoginRequest, LoginResponse, SignupRequest } from "../types/auth";
 
 type BaseResponse<T> = {
   success: boolean;
@@ -14,4 +14,13 @@ export const postLogin = async (data: LoginRequest) => {
   );
 
   return response.data.data;
+};
+
+export const postSignup = async (data: SignupRequest) => {
+  const response = await axiosInstance.post<BaseResponse<string>>(
+    "/api/auth/signup",
+    data,
+  );
+
+  return response.data;
 };

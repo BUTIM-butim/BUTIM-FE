@@ -182,6 +182,12 @@ const InputBase = ({
           {icon}
         </button>
       )}
+
+      {rightIcon && !hasClickableIcon && (
+        <div className="ml-[8px] flex shrink-0 items-center justify-center">
+          {rightIcon}
+        </div>
+      )}
     </div>
   );
 };

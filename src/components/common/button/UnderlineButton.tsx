@@ -8,8 +8,8 @@ type UnderlineButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const sizeStyles: Record<UnderlineButtonSize, string> = {
-  small: "font-pretendard text-[12px] font-semibold",
-  large: "font-pretendard text-[14px] font-semibold",
+  small: "font-pretendard text-[12px] font-semibold leading-[14px]",
+  large: "font-pretendard text-[14px] font-semibold leading-[17px]",
 };
 
 const UnderlineButton = ({
@@ -25,8 +25,8 @@ const UnderlineButton = ({
       disabled={disabled}
       className={`
         relative isolate inline-flex w-fit items-center justify-center
-        overflow-hidden
-        text-hero-text-blue underline decoration-hero-text-blue underline-offset-[3px]
+        overflow-visible
+        text-hero-text-blue
         transition-all duration-200
         cursor-pointer
         disabled:cursor-not-allowed disabled:opacity-60
@@ -40,7 +40,9 @@ const UnderlineButton = ({
       `}
       {...props}
     >
-      <span className="relative z-10">{children}</span>
+      <span className="relative z-10 underline decoration-hero-text-blue underline-offset-[3px]">
+        {children}
+      </span>
     </button>
   );
 };

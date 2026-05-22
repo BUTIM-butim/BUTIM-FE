@@ -1,9 +1,9 @@
+import SignupCard from "../../components/auth/SignupCard";
+
 const SignupPage = () => {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background-blue">
-      <div className="typo-card-title text-text-black">
-        회원가입 페이지 작업 예정
-      </div>
+    <main className="flex min-h-screen items-start justify-center bg-background-blue px-6 py-[16px]">
+      <SignupCard />
     </main>
   );
 };

@@ -1,7 +1,8 @@
 import { useState, type ChangeEvent, type InputHTMLAttributes } from "react";
-import InputBase, { type InputStatus } from "./InputBase";
-import FieldLabel from "./FieldLabel";
+
 import OutlineButton from "../button/OutlineButton";
+import FieldLabel from "./FieldLabel";
+import InputBase, { type InputStatus } from "./InputBase";
 
 type LoginPhoneNumberInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -13,6 +14,7 @@ type LoginPhoneNumberInputProps = Omit<
   onButtonClick?: () => void;
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   containerClassName?: string;
+  buttonDisabled?: boolean;
 };
 
 const LoginPhoneNumberInput = ({
@@ -25,6 +27,7 @@ const LoginPhoneNumberInput = ({
   value,
   defaultValue,
   containerClassName = "",
+  buttonDisabled = false,
   ...props
 }: LoginPhoneNumberInputProps) => {
   const [inputValue, setInputValue] = useState(
@@ -32,7 +35,7 @@ const LoginPhoneNumberInput = ({
   );
 
   const currentValue = value !== undefined ? String(value) : inputValue;
-  const isButtonActive = currentValue.trim().length > 0;
+  const isButtonActive = currentValue.trim().length > 0 && !buttonDisabled;
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -60,8 +63,8 @@ const LoginPhoneNumberInput = ({
             size="signIn"
             fullWidth
             isActive={isButtonActive}
-            disabled={!isButtonActive}
-            onClick={onButtonClick}
+            disabled={buttonDisabled}
+            onClick={buttonDisabled ? undefined : onButtonClick}
           >
             {buttonText}
           </OutlineButton>

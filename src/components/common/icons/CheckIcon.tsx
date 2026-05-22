@@ -1,6 +1,7 @@
 type CheckIconVariant =
   | "smallGray"
   | "smallBlue"
+  | "smallWarning"
   | "large"
   | "strategyBlue"
   | "strategyGreen";
@@ -87,6 +88,36 @@ const CheckIcon = ({
           <path
             d={checkPathSmall}
             stroke="var(--color-white)"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
+      </svg>
+    );
+  }
+
+  if (variant === "smallWarning") {
+    return (
+      <svg
+        className={className}
+        width="17"
+        height="17"
+        viewBox="0 0 17 17"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d={circlePathSmall}
+          stroke="var(--color-warning-red)"
+          strokeWidth="1.2"
+          strokeLinejoin="round"
+        />
+        {checked && (
+          <path
+            d={checkPathSmall}
+            stroke="var(--color-warning-red)"
             strokeWidth="1.2"
             strokeLinecap="round"
             strokeLinejoin="round"
