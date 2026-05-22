@@ -19,7 +19,12 @@ export type EmploymentStatusEnum =
   | 'UNEMPLOYED'
   | 'ETC';
 
-export type HouseholdTypeEnum = 'BASIC_LIVELIHOOD_RECIPIENT' | 'NEAR_POVERTY' | 'NONE';
+export type HouseholdTypeEnum =
+  | 'BASIC_LIVELIHOOD_RECIPIENT'
+  | 'NEAR_POVERTY'
+  | 'NONE';
+
+export type DependentTypeEnum = 'CHILD' | 'PARENT' | 'ETC';
 
 // Step 1 폼 상태 (입력값은 string으로 관리)
 export type FundStatusData = {
@@ -32,11 +37,19 @@ export type FundStatusData = {
 // Step 2 폼 상태
 export type SupportTargetData = {
   regionId: string;
+  regionName: string;
+
   householdType: HouseholdTypeEnum | '';
+  householdMemberCount: string;
+
   hasDependent: boolean | null;
+  dependentCount: string;
+  dependentType: DependentTypeEnum | '';
+
   hasChild: boolean | null;
-  childCount: string;
+
   isPregnant: boolean | null;
+
   hasDisability: boolean | null;
   disabilityGrade: string;
 };
@@ -45,17 +58,25 @@ export type SupportTargetData = {
 export type FinancialInfoPayload = {
   accidentInfoId: number;
   regionId: number;
+
   currentAssets: number;
   monthlyFixedExpense: number;
   incomeLevel: IncomeLevelEnum;
+  currentEmploymentStatus: EmploymentStatusEnum;
+
   householdType: HouseholdTypeEnum;
+  householdMemberCount: number;
+
   hasDependent: boolean;
+  dependentCount?: number;
+  dependentType?: DependentTypeEnum;
+
   hasChild: boolean;
-  childCount?: number;
+
   isPregnant: boolean;
+
   hasDisability: boolean;
   disabilityGrade?: number;
-  currentEmploymentStatus: EmploymentStatusEnum;
 };
 
 // 백엔드 API 응답 바디
@@ -65,15 +86,23 @@ export type FinancialInfoResponse = {
   accidentInfoId: number;
   regionId: number;
   regionName: string;
+
   currentAssets: number;
   monthlyFixedExpense: number;
   incomeLevel: IncomeLevelEnum;
+  currentEmploymentStatus: EmploymentStatusEnum;
+
   householdType: HouseholdTypeEnum;
+  householdMemberCount: number;
+
   hasDependent: boolean;
+  dependentCount?: number;
+  dependentType?: DependentTypeEnum;
+
   hasChild: boolean;
-  childCount?: number;
+
   isPregnant: boolean;
+
   hasDisability: boolean;
   disabilityGrade?: number;
-  currentEmploymentStatus: EmploymentStatusEnum;
 };
