@@ -41,7 +41,6 @@ const initialSupportTarget: SupportTargetData = {
   isPregnant: null,
 
   hasDisability: null,
-  disabilityGrade: '',
 };
 
 type FundStatusErrors = Partial<Record<keyof FundStatusData, boolean>>;
@@ -109,8 +108,6 @@ export default function FinancialInfoPage() {
           isPregnant: data.isPregnant ?? null,
 
           hasDisability: data.hasDisability ?? null,
-          disabilityGrade:
-            data.disabilityGrade != null ? String(data.disabilityGrade) : '',
         });
       })
       .catch(() => {
@@ -141,10 +138,6 @@ export default function FinancialInfoPage() {
       isPregnant: supportTarget.isPregnant === null,
       hasDisability: supportTarget.hasDisability === null,
     };
-
-    if (supportTarget.hasDisability === true) {
-      errors.disabilityGrade = !supportTarget.disabilityGrade.trim();
-    }
 
     setSupportTargetErrors(errors);
 
@@ -263,11 +256,6 @@ export default function FinancialInfoPage() {
       isPregnant: supportTarget.isPregnant ?? false,
 
       hasDisability: supportTarget.hasDisability ?? false,
-
-      disabilityGrade:
-        supportTarget.hasDisability === true && supportTarget.disabilityGrade
-          ? Number(removeComma(supportTarget.disabilityGrade))
-          : undefined,
 
       currentEmploymentStatus:
         fundStatus.currentEmploymentStatus as EmploymentStatusEnum,
