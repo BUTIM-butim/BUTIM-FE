@@ -58,4 +58,8 @@ export const EMPLOYMENT_STATUS_OPTIONS = [
     label: '실업 상태',
     value: 'UNEMPLOYED',
   },
+  {
+    label: '기타',
+    value: 'ETC',
+  },
 ];

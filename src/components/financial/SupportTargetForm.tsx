@@ -318,24 +318,8 @@ export default function SupportTargetForm({
                 label="장애 여부"
                 value={data.hasDisability}
                 error={errors.hasDisability}
-                onChange={(value) => {
-                  onChange({
-                    ...data,
-                    hasDisability: value,
-                    disabilityGrade: value ? data.disabilityGrade : '',
-                  });
-                }}
-              />
-
-              {data.hasDisability && (
-                <FullInputField
-                  label="장애 등급"
-                  placeholder="장애 등급을 입력해주세요."
-                  value={data.disabilityGrade}
-                  error={errors.disabilityGrade}
-                  onChange={(value) => set('disabilityGrade')(value)}
+                onChange={(value) => set('hasDisability')(value)}
                 />
-              )}
             </>
           )}
 
