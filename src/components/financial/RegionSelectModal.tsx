@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import CloseIcon from '../common/icons/CloseIcon';
 import {
   regionApi,
   type SidoResponse,
@@ -39,31 +40,6 @@ const SearchIcon = () => {
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
-      />
-    </svg>
-  );
-};
-
-const CloseIcon = () => {
-  return (
-    <svg
-      width="31"
-      height="31"
-      viewBox="0 0 31 31"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M21.5 9L9.5 22"
-        stroke="#1F2937"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M9.5 9L21.5 22"
-        stroke="#1F2937"
-        strokeWidth="1.5"
-        strokeLinecap="round"
       />
     </svg>
   );
