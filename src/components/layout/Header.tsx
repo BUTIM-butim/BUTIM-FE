@@ -1,3 +1,5 @@
+import { useLocation, useNavigate } from 'react-router-dom';
+
 const Logo = () => (
   <svg
     width="76"
@@ -37,47 +39,55 @@ const Logo = () => (
     />
 
     <defs>
-      <linearGradient id="paint0_linear_logo" x1="15.6656" y1="-2.70663" x2="18.5653" y2="28.314" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#0070FC" />
-        <stop offset="0.5" stopColor="#0099B8" />
-        <stop offset="1" stopColor="#00A89C" />
-      </linearGradient>
-      <linearGradient id="paint1_linear_logo" x1="15.6656" y1="-2.70663" x2="18.5653" y2="28.314" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#0070FC" />
-        <stop offset="0.5" stopColor="#0099B8" />
-        <stop offset="1" stopColor="#00A89C" />
-      </linearGradient>
-      <linearGradient id="paint2_linear_logo" x1="15.6656" y1="-2.70663" x2="18.5653" y2="28.314" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#0070FC" />
-        <stop offset="0.5" stopColor="#0099B8" />
-        <stop offset="1" stopColor="#00A89C" />
-      </linearGradient>
-      <linearGradient id="paint3_linear_logo" x1="15.6656" y1="-2.70663" x2="18.5653" y2="28.314" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#0070FC" />
-        <stop offset="0.5" stopColor="#0099B8" />
-        <stop offset="1" stopColor="#00A89C" />
-      </linearGradient>
-      <linearGradient id="paint4_linear_logo" x1="15.6656" y1="-2.70663" x2="18.5653" y2="28.314" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#0070FC" />
-        <stop offset="0.5" stopColor="#0099B8" />
-        <stop offset="1" stopColor="#00A89C" />
-      </linearGradient>
-      <linearGradient id="paint5_linear_logo" x1="57.843" y1="0.873364" x2="59.2639" y2="25.3773" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#0070FC" />
-        <stop offset="0.5" stopColor="#0099B8" />
-        <stop offset="1" stopColor="#00A89C" />
-      </linearGradient>
-      <linearGradient id="paint6_linear_logo" x1="57.843" y1="0.873364" x2="59.2639" y2="25.3773" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#0070FC" />
-        <stop offset="0.5" stopColor="#0099B8" />
-        <stop offset="1" stopColor="#00A89C" />
-      </linearGradient>
+      {[
+        'paint0_linear_logo',
+        'paint1_linear_logo',
+        'paint2_linear_logo',
+        'paint3_linear_logo',
+        'paint4_linear_logo',
+      ].map((id) => (
+        <linearGradient
+          key={id}
+          id={id}
+          x1="15.6656"
+          y1="-2.70663"
+          x2="18.5653"
+          y2="28.314"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#0070FC" />
+          <stop offset="0.5" stopColor="#0099B8" />
+          <stop offset="1" stopColor="#00A89C" />
+        </linearGradient>
+      ))}
+
+      {['paint5_linear_logo', 'paint6_linear_logo'].map((id) => (
+        <linearGradient
+          key={id}
+          id={id}
+          x1="57.843"
+          y1="0.873364"
+          x2="59.2639"
+          y2="25.3773"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#0070FC" />
+          <stop offset="0.5" stopColor="#0099B8" />
+          <stop offset="1" stopColor="#00A89C" />
+        </linearGradient>
+      ))}
     </defs>
   </svg>
 );
 
 const BellIcon = () => (
-  <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="31"
+    height="31"
+    viewBox="0 0 31 31"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
       d="M10.5 21.5H20.5C21.3284 21.5 21.75 20.5 21.1642 19.9142L19.5 18.25V14C19.5 11.2386 17.2614 9 14.5 9C11.7386 9 9.5 11.2386 9.5 14V18.25L7.83579 19.9142C7.25 20.5 7.67157 21.5 8.5 21.5H10.5Z"
       stroke="#1F2937"
@@ -95,7 +105,13 @@ const BellIcon = () => (
 );
 
 const ChevronDownIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
       d="M3.5 5.25L7 8.75L10.5 5.25"
       stroke="#1F2937"
@@ -106,13 +122,50 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
+type InputProgress = {
+  lastPath?: string;
+  financialStep?: string;
+  supportTargetStep?: string;
+  hasAccidentInfo?: boolean;
+  hasFinancialInfo?: boolean;
+};
+
 type NavItemProps = {
   label: string;
   active?: boolean;
+  onClick: () => void;
 };
 
-const NavItem = ({ label, active = false }: NavItemProps) => (
-  <button type="button" className="flex h-[28px] w-[77px] flex-col items-center gap-[6px]">
+const INPUT_PROGRESS_STORAGE_KEY = 'butim-input-progress';
+
+const getInputProgress = (): InputProgress | null => {
+  const raw = localStorage.getItem(INPUT_PROGRESS_STORAGE_KEY);
+
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as InputProgress;
+  } catch {
+    return null;
+  }
+};
+
+const getNextInputPath = () => {
+  const progress = getInputProgress();
+
+  if (progress?.lastPath) {
+    return progress.lastPath;
+  }
+
+  return '/accident';
+};
+
+const NavItem = ({ label, active = false, onClick }: NavItemProps) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="flex h-[28px] w-[77px] flex-col items-center gap-[6px]"
+  >
     <span
       className={`typo-navbar-button flex h-[19px] w-full items-center justify-center text-center ${
         active ? 'text-navbar-blue' : 'text-text-black'
@@ -130,17 +183,55 @@ const NavItem = ({ label, active = false }: NavItemProps) => (
 );
 
 export default function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const pathname = location.pathname;
+
+  const isInfoActive =
+    pathname.startsWith('/accident') ||
+    pathname.startsWith('/financial') ||
+    pathname.startsWith('/information') ||
+    pathname === '/strategy/recommend';
+
+  const isPeriodActive =
+    pathname.startsWith('/period') ||
+    pathname.startsWith('/approval');
+
+  const isStrategyActive =
+    pathname === '/strategy/result' ||
+    pathname.startsWith('/strategy/result/');
+
   return (
     <header className="fixed left-0 right-0 top-0 z-50 h-[64px] bg-white shadow-[0_2px_13.4px_1px_rgba(0,0,0,0.04)]">
       <div className="relative h-full w-full">
-        <div className="absolute left-[120px] top-1/2 flex h-[38px] -translate-y-1/2 items-center rounded-[10px] px-[12px] py-[5px]">
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="absolute left-[120px] top-1/2 flex h-[38px] -translate-y-1/2 items-center rounded-[10px] px-[12px] py-[5px]"
+          aria-label="홈으로 이동"
+        >
           <Logo />
-        </div>
+        </button>
 
         <nav className="absolute left-1/2 top-[23px] flex h-[28px] w-[373px] -translate-x-1/2 items-center gap-[71px]">
-          <NavItem label="정보 입력" active />
-          <NavItem label="예상 기간" />
-          <NavItem label="맞춤 전략" />
+          <NavItem
+            label="정보 입력"
+            active={isInfoActive}
+            onClick={() => navigate(getNextInputPath())}
+          />
+
+          <NavItem
+            label="예상 기간"
+            active={isPeriodActive}
+            onClick={() => navigate('/period')}
+          />
+
+          <NavItem
+            label="맞춤 전략"
+            active={isStrategyActive}
+            onClick={() => navigate('/strategy/result')}
+          />
         </nav>
 
         <div className="absolute right-[120px] top-1/2 flex h-[31px] -translate-y-1/2 items-center gap-[8px]">

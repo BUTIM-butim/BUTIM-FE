@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 import Button from '../../components/common/button/Button';
@@ -67,7 +68,6 @@ const themeStyle = {
     text: 'text-navbar-blue',
     amount: 'text-text-blue',
     check: 'text-text-blue',
-    radio: 'bg-button-blue border-button-blue',
   },
   green: {
     selectedBorder: 'border-button-green',
@@ -75,7 +75,6 @@ const themeStyle = {
     text: 'text-text-green',
     amount: 'text-text-green',
     check: 'text-text-green',
-    radio: 'bg-button-green border-button-green',
   },
 };
 
@@ -189,78 +188,32 @@ function CashFlowChart() {
           </linearGradient>
         </defs>
 
-        {/* Y축 단위 */}
-        <text
-          x="36"
-          y="34"
-          fill="#989EA9"
-          fontSize="10"
-          fontWeight="500"
-          letterSpacing="-0.05em"
-        >
+        <text x="36" y="34" fill="#989EA9" fontSize="10" fontWeight="500">
           (만원)
         </text>
 
-        {/* Y축 라벨 */}
-        <text
-          x="40"
-          y="58"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="40" y="58" fill="#989EA9" fontSize="12" fontWeight="500">
           100
         </text>
-        <text
-          x="47"
-          y="109"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="47" y="109" fill="#989EA9" fontSize="12" fontWeight="500">
           50
         </text>
-        <text
-          x="58"
-          y="160"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="58" y="160" fill="#989EA9" fontSize="12" fontWeight="500">
           0
         </text>
-        <text
-          x="38"
-          y="211"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="38" y="211" fill="#989EA9" fontSize="12" fontWeight="500">
           -50
         </text>
-        <text
-          x="34"
-          y="262"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="34" y="262" fill="#989EA9" fontSize="12" fontWeight="500">
           -100
         </text>
 
-        {/* 그리드 라인 */}
         <line x1="79" y1="53" x2="646" y2="53" stroke="#EBEBEB" />
         <line x1="79" y1="103.75" x2="646" y2="103.75" stroke="#EBEBEB" />
         <line x1="79" y1="154.5" x2="646" y2="154.5" stroke="#EBEBEB" />
         <line x1="79" y1="205.25" x2="646" y2="205.25" stroke="#EBEBEB" />
         <line x1="79" y1="256" x2="646" y2="256" stroke="#EBEBEB" />
 
-        {/* 승인/지급 시점 */}
         <line
           x1="591.5"
           y1="53"
@@ -278,110 +231,41 @@ function CashFlowChart() {
           strokeDasharray="2 2"
         />
 
-        <text
-          x="578"
-          y="45"
-          fill="#2B3034"
-          fillOpacity="0.4"
-          fontSize="10"
-          fontWeight="500"
-          letterSpacing="-0.05em"
-        >
+        <text x="578" y="45" fill="#2B3034" fillOpacity="0.4" fontSize="10">
           승인 시점
         </text>
-        <text
-          x="620"
-          y="45"
-          fill="#2B3034"
-          fillOpacity="0.4"
-          fontSize="10"
-          fontWeight="500"
-          letterSpacing="-0.05em"
-        >
+        <text x="620" y="45" fill="#2B3034" fillOpacity="0.4" fontSize="10">
           지급 시점
         </text>
 
-        {/* X축 라벨 */}
-        <text
-          x="80"
-          y="288"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="80" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
           0일
         </text>
-        <text
-          x="210"
-          y="288"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="210" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
           30일
         </text>
-        <text
-          x="347"
-          y="288"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="347" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
           60일
         </text>
-        <text
-          x="484"
-          y="288"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="484" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
           90일
         </text>
-        <text
-          x="580"
-          y="288"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="580" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
           97일
         </text>
-        <text
-          x="638"
-          y="288"
-          fill="#989EA9"
-          fontSize="12"
-          fontWeight="500"
-          letterSpacing="-0.02em"
-        >
+        <text x="638" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
           111일
         </text>
-
-        <text
-          x="682"
-          y="288"
-          fill="#989EA9"
-          fontSize="10"
-          fontWeight="500"
-          letterSpacing="-0.05em"
-        >
+        <text x="682" y="288" fill="#989EA9" fontSize="10" fontWeight="500">
           (기준일: 26.04.13)
         </text>
 
-        {/* 현금 공백 영역 */}
         <path
           d="M359 255V154.5L495.5 206L633.5 234V255H359Z"
           fill="url(#cashGapGradient)"
           opacity="0.5"
         />
 
-        {/* 현금 공백 선 */}
         <path
           d="M359 154.5L496 205.5L633 234"
           stroke="#EF4444"
@@ -389,7 +273,6 @@ function CashFlowChart() {
           strokeLinecap="round"
         />
 
-        {/* 기존 현금 흐름 회색 선 */}
         <path
           d="M88 53L222 104L359 154.5"
           stroke="#C7CED9"
@@ -397,7 +280,6 @@ function CashFlowChart() {
           strokeLinecap="round"
         />
 
-        {/* 전략 1 선 */}
         <path
           d="M88.5 53L222.5 104L329 111.5L359 118.5L380 62L499 104L633.5 142"
           stroke="#185DC5"
@@ -405,7 +287,6 @@ function CashFlowChart() {
           strokeLinecap="round"
         />
 
-        {/* 전략 2 선 */}
         <path
           d="M88.5 53L222.5 104L359.5 154.5L496.5 205.5L530 135.5L598.5 113L633.5 129"
           stroke="#149F70"
@@ -413,7 +294,6 @@ function CashFlowChart() {
           strokeLinecap="round"
         />
 
-        {/* 현금 공백 시작 세로 점선 */}
         <line
           x1="359.75"
           y1="157"
@@ -424,7 +304,6 @@ function CashFlowChart() {
           strokeDasharray="3 3"
         />
 
-        {/* 회색 마커 */}
         {[
           [88, 53],
           [222, 103],
@@ -435,7 +314,6 @@ function CashFlowChart() {
           </g>
         ))}
 
-        {/* 빨간 마커 */}
         {[
           [359.5, 154],
           [496, 205],
@@ -447,7 +325,6 @@ function CashFlowChart() {
           </g>
         ))}
 
-        {/* 파란 마커 */}
         {[
           [88, 53],
           [222, 103],
@@ -463,7 +340,6 @@ function CashFlowChart() {
           </g>
         ))}
 
-        {/* 초록 마커 */}
         {[
           [88, 53],
           [222, 103],
@@ -479,44 +355,22 @@ function CashFlowChart() {
           </g>
         ))}
 
-        {/* 범례 */}
         <g>
           <circle cx="687.7" cy="59" r="5.35" stroke="#EF4444" />
           <circle cx="687.7" cy="59" r="4" fill="#EF4444" />
-          <text
-            x="706"
-            y="63"
-            fill="#EF4444"
-            fontSize="12"
-            fontWeight="500"
-            letterSpacing="-0.02em"
-          >
+          <text x="706" y="63" fill="#EF4444" fontSize="12" fontWeight="500">
             현금 공백
           </text>
 
           <circle cx="687.7" cy="81" r="5.35" stroke="#3778E3" />
           <circle cx="687.7" cy="81" r="4" fill="#3778E3" />
-          <text
-            x="706"
-            y="85"
-            fill="#3778E3"
-            fontSize="12"
-            fontWeight="500"
-            letterSpacing="-0.02em"
-          >
+          <text x="706" y="85" fill="#3778E3" fontSize="12" fontWeight="500">
             전략 1
           </text>
 
           <circle cx="687.7" cy="103" r="5.35" stroke="#1BAB8B" />
           <circle cx="687.7" cy="103" r="4" fill="#1BAB8B" />
-          <text
-            x="706"
-            y="107"
-            fill="#1BAB8B"
-            fontSize="12"
-            fontWeight="500"
-            letterSpacing="-0.02em"
-          >
+          <text x="706" y="107" fill="#1BAB8B" fontSize="12" fontWeight="500">
             전략 2
           </text>
         </g>
@@ -553,7 +407,9 @@ function InfoBox({
                 </p>
               </div>
 
-              <p className={`text-[14px] font-medium leading-[17px] ${amountClass}`}>
+              <p
+                className={`text-[14px] font-medium leading-[17px] ${amountClass}`}
+              >
                 {item.amount}
               </p>
             </div>
@@ -580,8 +436,9 @@ function StrategyCard({
   onClick: () => void;
 }) {
   const style = themeStyle[strategy.theme];
-  const hasLoans = strategy.loans !== undefined && strategy.loans.length > 0;
+
   const hasSupports = strategy.supports.length > 0;
+  const hasLoans = strategy.loans !== undefined && strategy.loans.length > 0;
 
   const borderClass = showError
     ? 'border-warning-red'
@@ -590,7 +447,6 @@ function StrategyCard({
       : 'border-line-gray';
 
   const backgroundClass = selected ? style.selectedBg : 'bg-white';
-
   const titleClass = selected ? style.text : 'text-text-black';
 
   return (
@@ -604,6 +460,7 @@ function StrategyCard({
       <div className="flex w-[355px] flex-col gap-[24px]">
         <div className="flex h-[29px] items-center gap-[6px]">
           <StrategyCheckIcon selected={selected} theme={strategy.theme} />
+
           <h3
             className={`text-[24px] font-semibold leading-[29px] tracking-[-0.02em] ${titleClass}`}
           >
@@ -690,6 +547,8 @@ function StrategyCompleteModal({
 }
 
 export default function StrategyRecommendationPage() {
+  const navigate = useNavigate();
+
   const [selectedStrategyId, setSelectedStrategyId] =
     useState<StrategyId | null>(null);
   const [showError, setShowError] = useState(false);
@@ -710,7 +569,19 @@ export default function StrategyRecommendationPage() {
   };
 
   const handleMove = () => {
+    if (selectedStrategyId) {
+      localStorage.setItem('butim-selected-strategy-id', selectedStrategyId);
+      localStorage.setItem('butim-has-strategy-result', 'true');
+    }
+
     setIsCompleteModalOpen(false);
+
+    navigate('/strategy/result', {
+      state: {
+        hasStrategyResult: true,
+        selectedStrategyId,
+      },
+    });
   };
 
   return (
@@ -738,8 +609,8 @@ export default function StrategyRecommendationPage() {
             </p>
 
             <p className="typo-inform-title-caption text-title-gray">
-              전략 1과 전략 2중 하나를 선택하시면, 선택한 전략을 기준으로 현금
-              흐름과 지원금 일정을 안내해드립니다.
+              전략 1과 전략 2중 하나를 선택하시면, 선택한 전략을 기준으로 
+              현금 흐름과 지원금 일정을 안내해드립니다.
             </p>
           </div>
 
@@ -773,7 +644,7 @@ export default function StrategyRecommendationPage() {
                 size="information"
                 hasArrow
                 arrowDirection="left"
-                onClick={() => window.history.back()}
+                onClick={() => navigate('/financial')}
               >
                 이전 단계
               </Button>
