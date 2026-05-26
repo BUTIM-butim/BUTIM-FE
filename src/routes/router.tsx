@@ -1,14 +1,16 @@
-import { createBrowserRouter } from "react-router-dom";
-import { ROUTES } from "../constants/routes";
+import { Navigate, createBrowserRouter } from 'react-router-dom';
+import { ROUTES } from '../constants/routes';
 
-import MainPage from "../pages/MainPage";
-import LoginPage from "../pages/auth/LoginPage";
-import SignupPage from "../pages/auth/SignupPage";
-import ButtonTestPage from "../pages/dev/ButtonTestPage";
-import ModalTestPage from "../pages/dev/ModalTestPage";
-import UserEditPage from "../pages/user/UserEditPage";
-import FinancialInfoPage from "../pages/financial/FinancialInfoPage";
-import FinancialSupportInfoPage from "../pages/financial/FinancialSupportInfoPage";
+import MainPage from '../pages/MainPage';
+import LoginPage from '../pages/auth/LoginPage';
+import SignupPage from '../pages/auth/SignupPage';
+import ButtonTestPage from '../pages/dev/ButtonTestPage';
+import ModalTestPage from '../pages/dev/ModalTestPage';
+import UserEditPage from '../pages/user/UserEditPage';
+import FinancialInfoPage from '../pages/financial/FinancialInfoPage';
+import FinancialSupportInfoPage from '../pages/financial/FinancialSupportInfoPage';
+import StrategyRecommendationPage from '../pages/strategy/StrategyRecommendationPage';
+import StrategyResultPage from '../pages/strategy/StrategyResultPage';
 
 export const router = createBrowserRouter([
   {
@@ -28,11 +30,11 @@ export const router = createBrowserRouter([
     element: <ButtonTestPage />,
   },
   {
-    path: "/dev/modal-test",
+    path: '/dev/modal-test',
     element: <ModalTestPage />,
   },
   {
-    path: "/user/edit",
+    path: '/user/edit',
     element: <UserEditPage />,
   },
   {
@@ -42,5 +44,17 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.FINANCIAL_SUPPORT_INFO,
     element: <FinancialSupportInfoPage />,
+  },
+  {
+    path: '/strategy',
+    element: <Navigate to="/strategy/result" replace />,
+  },
+  {
+    path: '/strategy/recommend',
+    element: <StrategyRecommendationPage />,
+  },
+  {
+    path: '/strategy/result',
+    element: <StrategyResultPage />,
   },
 ]);
