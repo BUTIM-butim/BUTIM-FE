@@ -9,6 +9,7 @@ import ModalTestPage from "../pages/dev/ModalTestPage";
 import UserEditPage from "../pages/user/UserEditPage";
 import FinancialInfoPage from "../pages/financial/FinancialInfoPage";
 import FinancialSupportInfoPage from "../pages/financial/FinancialSupportInfoPage";
+import StrategyRecommendationPage from '../pages/strategy/StrategyRecommendationPage';
 
 export const router = createBrowserRouter([
   {
@@ -42,5 +43,9 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.FINANCIAL_SUPPORT_INFO,
     element: <FinancialSupportInfoPage />,
+  },
+  {
+  path: '/strategy/recommend',
+  element: <StrategyRecommendationPage />,
   },
 ]);

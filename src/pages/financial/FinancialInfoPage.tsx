@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type {
   FinancialStep,
   FundStatusData,
@@ -49,6 +50,8 @@ type SupportTargetErrors = Partial<Record<keyof SupportTargetData, boolean>>;
 const removeComma = (value: string) => value.replaceAll(',', '').trim();
 
 export default function FinancialInfoPage() {
+  const navigate = useNavigate();
+
   const [step, setStep] = useState<FinancialStep>('fund-status');
   const [supportTargetStep, setSupportTargetStep] =
     useState<SupportTargetStep>('basic');
@@ -271,6 +274,8 @@ export default function FinancialInfoPage() {
 
       setSupportTargetErrors({});
       setError(null);
+
+      navigate('/strategy/recommend');
     } catch (e) {
       setError(e instanceof Error ? e.message : '저장에 실패했습니다.');
     } finally {
