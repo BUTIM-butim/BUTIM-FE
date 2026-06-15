@@ -30,11 +30,11 @@ export const router = createBrowserRouter([
     element: <ButtonTestPage />,
   },
   {
-    path: '/dev/modal-test',
+    path: ROUTES.MODAL_TEST,
     element: <ModalTestPage />,
   },
   {
-    path: '/user/edit',
+    path: ROUTES.USER_EDIT,
     element: <UserEditPage />,
   },
   {
@@ -46,15 +46,15 @@ export const router = createBrowserRouter([
     element: <FinancialSupportInfoPage />,
   },
   {
-    path: '/strategy',
-    element: <Navigate to="/strategy/result" replace />,
+    path: ROUTES.STRATEGY,
+    element: <Navigate to={ROUTES.STRATEGY_RESULT} replace />,
   },
   {
-    path: '/strategy/recommend',
+    path: ROUTES.STRATEGY_RECOMMEND,
     element: <StrategyRecommendationPage />,
   },
   {
-    path: '/strategy/result',
+    path: ROUTES.STRATEGY_RESULT,
     element: <StrategyResultPage />,
   },
 ]);
