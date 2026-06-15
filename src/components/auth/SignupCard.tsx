@@ -1,8 +1,10 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 
 import logoFullLogin from "../../assets/logo-full-login.svg";
+import { postPhoneSend, postPhoneVerify, postSignup } from "../../apis/auth";
 
 import TermsAgreementModal from "./TermsAgreementModal";
+import SignupCompleteCard from "./SignupCompleteCard";
 import Button from "../common/button/Button";
 import UnderlineButton from "../common/button/UnderlineButton";
 import CheckButton from "../common/check/CheckButton";
@@ -10,9 +12,20 @@ import LoginLongInput from "../common/input/LoginLongInput";
 import LoginPasswordInput from "../common/input/LoginPasswordInput";
 import LoginPhoneNumberInput from "../common/input/LoginPhoneNumberInput";
 import ValidationMessage from "../common/input/ValidationMessage";
-import SignupCompleteCard from "./SignupCompleteCard";
 
 type SignupCardMode = "signup" | "edit";
+
+export type TermKey = "privacy" | "service" | "age" | "sms";
+
+export type SignupCardSubmitValues = {
+  name: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+  phoneNumber: string;
+  termsAgreed: boolean;
+  pushAlarmAgreed: boolean;
+};
 
 type SignupCardProps = {
   mode?: SignupCardMode;
@@ -20,14 +33,7 @@ type SignupCardProps = {
   initialEmail?: string;
   initialPhone?: string;
   initialTerms?: TermKey[];
-  onEditComplete?: (values: {
-    name: string;
-    email: string;
-    password: string;
-    phoneNumber: string;
-    termsAgreed: boolean;
-    pushAlarmAgreed: boolean;
-  }) => void;
+  onEditComplete?: (values: SignupCardSubmitValues) => void | Promise<void>;
 };
 
 type SignupErrors = {
@@ -38,14 +44,13 @@ type SignupErrors = {
   terms?: string;
 };
 
-type TermKey = "privacy" | "service" | "age" | "sms";
-
 type ErrorSlotProps = {
   message?: string;
 };
 
 const REQUIRED_TERMS: TermKey[] = ["privacy", "service", "age"];
 const ALL_TERMS: TermKey[] = ["privacy", "service", "age", "sms"];
+const EMPTY_TERMS: TermKey[] = [];
 
 const TERM_CAPTION_LABELS: Record<TermKey, string> = {
   privacy: "개인정보 취급방침",
@@ -56,8 +61,6 @@ const TERM_CAPTION_LABELS: Record<TermKey, string> = {
 
 const DEFAULT_TERMS_CAPTION =
   "개인정보 취급방침 · 서비스 이용약관 · 만 14세 이상 이용 동의 (필수) | 문자 수신 동의 (선택)";
-
-const TEST_VERIFICATION_CODE = "1234"; // 테스트를 위해 기본 비밀번호를 1234로 설정
 
 const ErrorSlot = ({ message }: ErrorSlotProps) => {
   if (!message) {
@@ -76,7 +79,7 @@ const SignupCard = ({
   initialName = "",
   initialEmail = "",
   initialPhone = "",
-  initialTerms = [],
+  initialTerms = EMPTY_TERMS,
   onEditComplete,
 }: SignupCardProps) => {
   const isEditMode = mode === "edit";
@@ -93,15 +96,19 @@ const SignupCard = ({
 
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(Boolean(initialPhone));
+  const [hasPhoneBeenChanged, setHasPhoneBeenChanged] = useState(false);
 
   const [selectedTerms, setSelectedTerms] = useState<TermKey[]>(initialTerms);
+
   const [isTermsSelectedFromModal, setIsTermsSelectedFromModal] = useState(
     initialTerms.length > 0 && initialTerms.length < ALL_TERMS.length,
   );
+
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const [errors, setErrors] = useState<SignupErrors>({});
   const [isSignupCompleted, setIsSignupCompleted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isAllRequiredTermsChecked = REQUIRED_TERMS.every((term) =>
     selectedTerms.includes(term),
@@ -244,16 +251,8 @@ const SignupCard = ({
     }
 
     if (!isPhoneVerified) {
-      if (!isVerificationSent) {
+      if (!isVerificationSent || !trimmedVerificationCode) {
         return "인증번호를 입력해주세요.";
-      }
-
-      if (!trimmedVerificationCode) {
-        return "인증번호를 입력해주세요.";
-      }
-
-      if (trimmedVerificationCode !== TEST_VERIFICATION_CODE) {
-        return "인증번호가 일치하지 않습니다.";
       }
     }
 
@@ -320,10 +319,23 @@ const SignupCard = ({
 
   const handlePhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextPhone = event.target.value;
+    const trimmedNextPhone = nextPhone.trim();
+
+    const changedFromInitialPhone =
+      isEditMode && trimmedNextPhone !== initialPhone.trim();
+
+    const shouldInvalidateVerification =
+      trimmedNextPhone !== verifiedPhone ||
+      hasPhoneBeenChanged ||
+      changedFromInitialPhone;
 
     setPhone(nextPhone);
 
-    if (nextPhone.trim() !== verifiedPhone) {
+    if (changedFromInitialPhone) {
+      setHasPhoneBeenChanged(true);
+    }
+
+    if (shouldInvalidateVerification) {
       setIsPhoneVerified(false);
       setIsVerificationSent(false);
       setVerificationCode("");
@@ -352,10 +364,14 @@ const SignupCard = ({
     event: ChangeEvent<HTMLInputElement>,
   ) => {
     setVerificationCode(event.target.value);
-    setErrors((prev) => ({ ...prev, verificationCode: undefined }));
+
+    setErrors((prev) => ({
+      ...prev,
+      verificationCode: undefined,
+    }));
   };
 
-  const handleSendVerificationCode = () => {
+  const handleSendVerificationCode = async () => {
     const trimmedPhone = phone.trim();
 
     if (!trimmedPhone) {
@@ -374,23 +390,32 @@ const SignupCard = ({
       return;
     }
 
-    // TODO: 휴대폰 인증번호 전송 API 연결
-    // POST /api/auth/phone/send
-    // 서버 전송 시 phoneNumber: phone.replaceAll("-", "")
+    try {
+      const response = await postPhoneSend({
+        phoneNumber: trimmedPhone.replaceAll("-", ""),
+      });
 
-    setIsVerificationSent(true);
-    setIsPhoneVerified(false);
-    setVerifiedPhone("");
-    setVerificationCode("");
+      setIsVerificationSent(true);
+      setIsPhoneVerified(false);
+      setVerificationCode(response.code ?? "");
 
-    setErrors((prev) => ({
-      ...prev,
-      verificationCode: undefined,
-    }));
+      setErrors((prev) => ({
+        ...prev,
+        verificationCode: undefined,
+      }));
+    } catch {
+      setErrors((prev) => ({
+        ...prev,
+        verificationCode: "인증번호 전송에 실패했습니다. 다시 시도해주세요.",
+      }));
+    }
   };
 
   const handleToggleAllTerms = () => {
-    setErrors((prev) => ({ ...prev, terms: undefined }));
+    setErrors((prev) => ({
+      ...prev,
+      terms: undefined,
+    }));
 
     if (selectedTerms.length > 0) {
       setSelectedTerms([]);
@@ -416,7 +441,10 @@ const SignupCard = ({
     setIsTermsModalOpen(false);
 
     if (REQUIRED_TERMS.every((term) => nextSelectedTerms.includes(term))) {
-      setErrors((prev) => ({ ...prev, terms: undefined }));
+      setErrors((prev) => ({
+        ...prev,
+        terms: undefined,
+      }));
     }
   };
 
@@ -455,27 +483,10 @@ const SignupCard = ({
     return nextErrors;
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const nextErrors = validateForm();
-
-    const trimmedPhone = phone.trim();
-
-    const canVerifyPhone =
-      isVerificationSent &&
-      !isPhoneVerified &&
-      verificationCode.trim() === TEST_VERIFICATION_CODE &&
-      validatePhone(trimmedPhone);
-
-    if (canVerifyPhone) {
-      setIsPhoneVerified(true);
-      setIsVerificationSent(false);
-      setVerifiedPhone(trimmedPhone);
-      setVerificationCode("");
-
-      delete nextErrors.verificationCode;
-    }
 
     setErrors(nextErrors);
 
@@ -483,40 +494,71 @@ const SignupCard = ({
       return;
     }
 
-    const submitValues = {
-      name,
-      email,
-      password,
-      passwordConfirm,
-      phoneNumber: phone.replaceAll("-", ""),
-      termsAgreed: isAllRequiredTermsChecked,
-      pushAlarmAgreed: selectedTerms.includes("sms"),
-    };
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const trimmedPasswordConfirm = passwordConfirm.trim();
+    const trimmedPhone = phone.trim();
 
-    if (isEditMode) {
-      // TODO: 회원 정보 수정 API 연결
-      // PATCH /api/user/me
-      // 이메일 또는 비밀번호가 변경되면 서버에 변경된 값이 저장되어야 하며,
-      // 이후 로그인 시 변경된 이메일/비밀번호를 사용해야 함
-      console.log("회원 정보 수정 예정", submitValues);
+    const phoneNumber = trimmedPhone.replaceAll("-", "");
 
-      onEditComplete?.({
-        name,
-        email,
-        password,
-        phoneNumber: phone.replaceAll("-", ""),
+    const shouldVerifyPhone =
+      !isPhoneVerified || trimmedPhone !== verifiedPhone;
+
+    try {
+      setIsSubmitting(true);
+
+      if (shouldVerifyPhone) {
+        await postPhoneVerify({
+          phoneNumber,
+          code: verificationCode.trim(),
+        });
+
+        setIsPhoneVerified(true);
+        setIsVerificationSent(false);
+        setVerifiedPhone(trimmedPhone);
+        setVerificationCode("");
+        setHasPhoneBeenChanged(false);
+      }
+
+      const submitValues: SignupCardSubmitValues = {
+        name: trimmedName,
+        email: trimmedEmail,
+        password: trimmedPassword,
+        passwordConfirm: trimmedPasswordConfirm,
+        phoneNumber,
         termsAgreed: isAllRequiredTermsChecked,
         pushAlarmAgreed: selectedTerms.includes("sms"),
-      });
-      return;
+      };
+
+      if (isEditMode) {
+        if (!onEditComplete) {
+          throw new Error("회원정보 수정 함수가 연결되지 않았습니다.");
+        }
+
+        await onEditComplete(submitValues);
+        return;
+      }
+
+      await postSignup(submitValues);
+      setIsSignupCompleted(true);
+    } catch {
+      if (shouldVerifyPhone) {
+        setErrors((prev) => ({
+          ...prev,
+          verificationCode: "인증번호가 일치하지 않습니다.",
+        }));
+        return;
+      }
+
+      alert(
+        isEditMode
+          ? "회원 정보 수정에 실패했습니다. 다시 시도해주세요."
+          : "회원가입에 실패했습니다. 다시 시도해주세요.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // TODO: 회원가입 API 연결
-    // POST /api/auth/signup
-
-    console.log("회원가입 성공 처리 예정", submitValues);
-
-    setIsSignupCompleted(true);
   };
 
   const passwordStatus = errors.password ? "error" : "default";
@@ -530,7 +572,7 @@ const SignupCard = ({
   const verificationCodeStatus = errors.verificationCode ? "error" : "default";
 
   const isVerifiedCurrentPhone =
-    isPhoneVerified && phone.trim() === verifiedPhone;
+    isPhoneVerified && phone.trim() === verifiedPhone && !hasPhoneBeenChanged;
 
   const isPhoneButtonDisabled = isVerifiedCurrentPhone || !phone.trim();
 
@@ -538,7 +580,7 @@ const SignupCard = ({
     ? "인증 완료"
     : "인증번호 전송";
 
-  if (isSignupCompleted) {
+  if (!isEditMode && isSignupCompleted) {
     return (
       <div className="flex min-h-[calc(100vh-48px)] items-center justify-center">
         <SignupCompleteCard />
@@ -567,7 +609,7 @@ const SignupCard = ({
         >
           <div>
             <LoginLongInput
-              id="signup-name"
+              id={isEditMode ? "edit-user-name" : "signup-name"}
               label="이름"
               placeholder="홍길동"
               value={name}
@@ -575,12 +617,13 @@ const SignupCard = ({
               onChange={handleNameChange}
               autoComplete="name"
             />
+
             <ErrorSlot message={errors.name} />
           </div>
 
           <div className="mt-[24px]">
             <LoginLongInput
-              id="signup-email"
+              id={isEditMode ? "edit-user-email" : "signup-email"}
               label="이메일"
               type="email"
               placeholder="example@email.com"
@@ -589,12 +632,13 @@ const SignupCard = ({
               onChange={handleEmailChange}
               autoComplete="email"
             />
+
             <ErrorSlot message={errors.email} />
           </div>
 
           <div className="mt-[24px]">
             <LoginPasswordInput
-              id="signup-password"
+              id={isEditMode ? "edit-user-password" : "signup-password"}
               label="비밀번호"
               placeholder="영문/숫자/특수문자 조합, 8-12자"
               value={password}
@@ -606,7 +650,11 @@ const SignupCard = ({
 
           <div className="mt-[8px]">
             <LoginPasswordInput
-              id="signup-password-confirm"
+              id={
+                isEditMode
+                  ? "edit-user-password-confirm"
+                  : "signup-password-confirm"
+              }
               label=""
               placeholder="비밀번호를 한 번 더 입력해주세요."
               value={passwordConfirm}
@@ -614,12 +662,13 @@ const SignupCard = ({
               onChange={handlePasswordConfirmChange}
               autoComplete="new-password"
             />
+
             <ErrorSlot message={errors.password} />
           </div>
 
           <div className="mt-[24px]">
             <LoginPhoneNumberInput
-              id="signup-phone"
+              id={isEditMode ? "edit-user-phone" : "signup-phone"}
               label="전화번호"
               placeholder="010 - 0000 - 0000"
               value={phone}
@@ -629,7 +678,7 @@ const SignupCard = ({
               onButtonClick={
                 isPhoneButtonDisabled ? undefined : handleSendVerificationCode
               }
-              buttonDisabled={isPhoneButtonDisabled}
+              buttonDisabled={isPhoneButtonDisabled || isSubmitting}
               autoComplete="tel"
             />
           </div>
@@ -637,7 +686,11 @@ const SignupCard = ({
           {!isVerifiedCurrentPhone && (
             <div className="mt-[8px]">
               <LoginLongInput
-                id="signup-verification-code"
+                id={
+                  isEditMode
+                    ? "edit-user-verification-code"
+                    : "signup-verification-code"
+                }
                 label=""
                 placeholder="인증번호를 입력해주세요."
                 value={verificationCode}
@@ -646,6 +699,7 @@ const SignupCard = ({
                 disabled={!isVerificationSent}
                 containerClassName="[&>label]:hidden [&>label]:h-0 [&>label]:overflow-hidden"
               />
+
               <ErrorSlot message={errors.verificationCode} />
             </div>
           )}
@@ -685,6 +739,7 @@ const SignupCard = ({
             variant="blue"
             size="login"
             type="submit"
+            disabled={isSubmitting}
             className="mt-[40px] mb-[64px]"
           >
             완료

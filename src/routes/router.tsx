@@ -9,6 +9,8 @@ import ModalTestPage from "../pages/dev/ModalTestPage";
 import UserEditPage from "../pages/user/UserEditPage";
 import FinancialInfoPage from "../pages/financial/FinancialInfoPage";
 import FinancialSupportInfoPage from "../pages/financial/FinancialSupportInfoPage";
+import LogoutTestPage from "../pages/dev/LogoutTestPage"; // 로그아웃 네브바 연결 후 삭제
+import WithdrawTestPage from "../pages/dev/WithdrawTestPage"; // 회원 탈퇴 네브바 연결 후 삭제
 
 export const router = createBrowserRouter([
   {
@@ -42,5 +44,13 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.FINANCIAL_SUPPORT_INFO,
     element: <FinancialSupportInfoPage />,
+  },
+  {
+    path: "/logout-test",
+    element: <LogoutTestPage />,
+  },
+  {
+    path: "/withdraw-test",
+    element: <WithdrawTestPage />,
   },
 ]);

@@ -18,3 +18,16 @@ export type SignupRequest = {
   termsAgreed: boolean;
   pushAlarmAgreed: boolean;
 };
+
+export type PhoneSendRequest = {
+  phoneNumber: string;
+};
+
+export type PhoneSendResponse = {
+  code: string;
+};
+
+export type PhoneVerifyRequest = {
+  phoneNumber: string;
+  code: string;
+};
