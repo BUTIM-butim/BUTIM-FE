@@ -1,86 +1,33 @@
-import type { FinancialStep } from '../../types/financial';
+import type { SidebarProps, SidebarSectionId, SidebarSubSectionId, SidebarStepStatus } from '../../types/sidebar';
+import { SIDEBAR_SECTIONS } from '../../constants/sidebar';
 
-type MainSectionKey = 'accident' | 'prediction' | 'financial' | 'strategy';
-
-type StepState = 'done' | 'active' | 'blueActive' | 'nonActive';
-type SubStepState = 'done' | 'active' | 'nonActive';
-
-type SidebarSubStep = {
-  key: string;
-  label: string;
-};
-
-type SidebarMainStep = {
-  key: MainSectionKey;
-  number: number;
-  label: string;
-  subSteps?: SidebarSubStep[];
-};
-
-type SidebarProps = {
-  currentSection?: MainSectionKey;
-  currentStep?: FinancialStep | string;
-};
-
-const SIDEBAR_STEPS: SidebarMainStep[] = [
-  {
-    key: 'accident',
-    number: 1,
-    label: '산재 정보 작성',
-    subSteps: [
-      { key: 'basic-info', label: '기본 정보' },
-      { key: 'accident-info', label: '사고 정보' },
-      { key: 'work-info', label: '근무 정보' },
-      { key: 'additional-info', label: '추가 정보' },
-    ],
-  },
-  {
-    key: 'prediction',
-    number: 2,
-    label: '예측 승인 기간',
-  },
-  {
-    key: 'financial',
-    number: 3,
-    label: '재정 정보 작성',
-    subSteps: [
-      { key: 'fund-status', label: '자금 상황' },
-      { key: 'support-target', label: '지원 대상 정보' },
-    ],
-  },
-  {
-    key: 'strategy',
-    number: 4,
-    label: '맞춤 전략 추천',
-  },
-];
+type SubStepState = Exclude<SidebarStepStatus, 'blueActive'>;
 
 const getMainState = (
-  stepKey: MainSectionKey,
-  currentSection: MainSectionKey,
-): StepState => {
-  const currentIndex = SIDEBAR_STEPS.findIndex((step) => step.key === currentSection);
-  const stepIndex = SIDEBAR_STEPS.findIndex((step) => step.key === stepKey);
+  sectionId: SidebarSectionId,
+  currentSectionId: SidebarSectionId,
+): SidebarStepStatus => {
+  const currentIndex = SIDEBAR_SECTIONS.findIndex((s) => s.id === currentSectionId);
+  const sectionIndex = SIDEBAR_SECTIONS.findIndex((s) => s.id === sectionId);
 
-  if (stepIndex < currentIndex) return 'done';
+  if (sectionIndex < currentIndex) return 'done';
 
-  if (stepKey === currentSection) {
-    const hasSubSteps = SIDEBAR_STEPS[stepIndex].subSteps?.length;
-    return hasSubSteps ? 'active' : 'blueActive';
+  if (sectionId === currentSectionId) {
+    return SIDEBAR_SECTIONS[sectionIndex].subSections.length > 0 ? 'active' : 'blueActive';
   }
 
   return 'nonActive';
 };
 
 const getSubState = (
-  subKey: string,
+  subId: SidebarSubSectionId,
   subIndex: number,
-  currentStep?: string,
-  currentSubSteps?: SidebarSubStep[],
+  currentSubSectionId?: SidebarSubSectionId,
+  subSections?: { id: SidebarSubSectionId; title: string }[],
 ): SubStepState => {
-  const currentIndex = currentSubSteps?.findIndex((step) => step.key === currentStep) ?? -1;
+  const currentIndex = subSections?.findIndex((s) => s.id === currentSubSectionId) ?? -1;
 
-  if (subKey === currentStep) return 'active';
+  if (subId === currentSubSectionId) return 'active';
   if (currentIndex !== -1 && subIndex < currentIndex) return 'done';
 
   return 'nonActive';
@@ -113,27 +60,29 @@ const NumberCircle = ({
   state,
 }: {
   number: number;
-  state: StepState;
+  state: SidebarStepStatus;
 }) => {
   if (state === 'done') {
     return (
-      <span className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full bg-[#4E5A6C]">
-        <CheckIcon size={24} />
+      <span className="flex h-[24px] w-[24px] shrink-0 items-center justify-center">
+        <span className="flex h-[18.35px] w-[18.35px] shrink-0 items-center justify-center rounded-full bg-[#4E5A6C]">
+          <CheckIcon size={21} />
+        </span>
       </span>
     );
   }
 
   if (state === 'blueActive') {
-    return <ProgressDot state="active" size={24} />;
+    return <ProgressDot state="active" size={21} />;
   }
 
-  const color = state === 'active' ? '#4E5A6C' : '#C7CED9';
+  const bgColor = state === 'active' ? '#4E5A6C' : '#C7CED9';
 
   return (
-    <span className="relative flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full">
+    <span className="flex h-[24px] w-[24px] shrink-0 items-center justify-center">
       <span
         className="flex h-[19.5px] w-[19.5px] items-center justify-center rounded-full text-[12px] font-semibold leading-none text-white"
-        style={{ backgroundColor: color }}
+        style={{ backgroundColor: bgColor }}
       >
         {number}
       </span>
@@ -156,10 +105,7 @@ const ProgressDot = ({
   return (
     <span
       className="relative flex shrink-0 items-center justify-center"
-      style={{
-        width: size,
-        height: size,
-      }}
+      style={{ width: size, height: size }}
     >
       <span
         className="flex items-center justify-center rounded-full border-[1.2px]"
@@ -199,9 +145,10 @@ const MainStepRow = ({
 }: {
   number: number;
   label: string;
-  state: StepState;
+  state: SidebarStepStatus;
 }) => {
   const isBlueActive = state === 'blueActive';
+  const isLargeFontState = state === 'active' || state === 'blueActive';
 
   const textClassName =
     state === 'blueActive'
@@ -213,7 +160,9 @@ const MainStepRow = ({
           : 'text-[#9CA3AF] text-[16px] leading-[230%]';
 
   return (
-    <div className="relative flex h-[41px] w-[195px] shrink-0 items-center px-[21px]">
+    <div
+      className={`relative flex w-[195px] shrink-0 items-center px-[21px] ${isLargeFontState ? 'h-[41px]' : 'h-[37px]'}`}
+    >
       {isBlueActive && (
         <div className="absolute left-[6px] top-0 h-[41px] w-[189px] rounded-[2px] border-l-[1.6px] border-[#1866DC] bg-[#3778E3]/[0.08]" />
       )}
@@ -264,39 +213,36 @@ const SubStepRow = ({
   );
 };
 
-export default function Sidebar({
-  currentSection = 'financial',
-  currentStep = 'fund-status',
-}: SidebarProps) {
+export default function Sidebar({ currentSectionId, currentSubSectionId }: SidebarProps) {
   return (
-    <aside className="fixed left-0 top-[64px] h-[calc(100vh-64px)] w-[288px] border-r border-[#E5E7EB] bg-[#F2F6FE] shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-      <nav className="pt-[130px]">
-        <div className="mx-auto flex w-[195px] flex-col items-start gap-[15px]">
-          {SIDEBAR_STEPS.map((step, index) => {
-            const mainState = getMainState(step.key, currentSection);
-            const isCurrentSection = step.key === currentSection;
-            const shouldShowSubSteps = isCurrentSection && step.subSteps?.length;
+    <aside className="fixed left-0 top-[64px] h-[calc(100vh-64px)] w-[288px] rounded-r-[10px] border-r border-[#E5E7EB] bg-[#F2F6FE] shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+      <nav className="pt-[110px]">
+        <div className="ml-[57px] flex w-[195px] flex-col items-start gap-[15px]">
+          {SIDEBAR_SECTIONS.map((section, index) => {
+            const mainState = getMainState(section.id, currentSectionId);
+            const isCurrentSection = section.id === currentSectionId;
+            const shouldShowSubSteps = isCurrentSection && section.subSections.length > 0;
 
             return (
-              <div key={step.key} className="contents">
+              <div key={section.id} className="contents">
                 <div className="flex w-[195px] flex-col items-start gap-[15px]">
                   <MainStepRow
-                    number={step.number}
-                    label={step.label}
+                    number={index + 1}
+                    label={section.title}
                     state={mainState}
                   />
 
                   {shouldShowSubSteps && (
                     <div className="flex w-[195px] flex-col items-start gap-[15px]">
-                      {step.subSteps?.map((subStep, subIndex) => (
+                      {section.subSections.map((subSection, subIndex) => (
                         <SubStepRow
-                          key={subStep.key}
-                          label={subStep.label}
+                          key={subSection.id}
+                          label={subSection.title}
                           state={getSubState(
-                            subStep.key,
+                            subSection.id,
                             subIndex,
-                            currentStep,
-                            step.subSteps,
+                            currentSubSectionId,
+                            section.subSections,
                           )}
                         />
                       ))}
@@ -304,7 +250,7 @@ export default function Sidebar({
                   )}
                 </div>
 
-                {index < SIDEBAR_STEPS.length - 1 && <Divider />}
+                {index < SIDEBAR_SECTIONS.length - 1 && <Divider />}
               </div>
             );
           })}

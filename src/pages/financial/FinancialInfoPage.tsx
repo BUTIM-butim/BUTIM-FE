@@ -388,7 +388,10 @@ export default function FinancialInfoPage() {
     <div className="min-h-screen bg-background-blue">
       <Header />
 
-      <Sidebar currentSection="financial" currentStep={step} />
+      <Sidebar
+        currentSectionId="financial"
+        currentSubSectionId={step === 'fund-status' ? 'funding' : 'supportTarget'}
+      />
 
       <main className="relative ml-[288px] min-h-screen overflow-hidden pt-[64px]">
         <div className="pointer-events-none absolute right-[-35px] top-[205px] opacity-[0.03]">

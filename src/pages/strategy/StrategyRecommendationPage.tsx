@@ -588,7 +588,7 @@ export default function StrategyRecommendationPage() {
     <div className="min-h-screen bg-background-blue">
       <Header />
 
-      <Sidebar currentSection="strategy" />
+      <Sidebar currentSectionId="strategy" />
 
       <main className="relative ml-[288px] min-h-screen overflow-hidden pt-[64px]">
         <div className="pointer-events-none absolute right-[-78px] top-[230px] opacity-[0.03]">
