@@ -13,7 +13,7 @@ type AppLayoutProps = {
 
 const AppLayout = ({
   activeMenuId = "",
-  isLoggedIn = true,
+  isLoggedIn = false,
   userName,
   hasNotification,
   showSidebar = false,
