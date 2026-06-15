@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import logoFull from '../../assets/logo-full-login.svg';
 import GoIcon from '../common/icons/GoIcon';
+import { ROUTES } from '../../constants/routes';
 
 type InputProgress = {
   lastPath?: string;
@@ -168,7 +169,7 @@ export default function Header({
       <div className="relative mx-auto flex h-full w-[calc(100%-240px)] max-w-[1272px] items-center justify-between max-lg:w-[calc(100%-48px)]">
         <button
           type="button"
-          onClick={() => navigate('/')}
+          onClick={() => navigate(ROUTES.MAIN)}
           className="flex h-[38px] shrink-0 cursor-pointer items-center gap-[8px] rounded-[10px] px-[12px] py-[4px]"
           aria-label="홈으로 이동"
         >
@@ -184,12 +185,12 @@ export default function Header({
           <NavItem
             label="예상 기간"
             active={isPeriodActive}
-            onClick={() => navigate('/period')}
+            onClick={() => navigate(ROUTES.PERIOD)}
           />
           <NavItem
             label="맞춤 전략"
             active={isStrategyActive}
-            onClick={() => navigate('/strategy/result')}
+            onClick={() => navigate(ROUTES.STRATEGY_RESULT)}
           />
         </nav>
 
@@ -225,7 +226,7 @@ export default function Header({
                 <div className="h-px w-full bg-line-gray opacity-40" />
                 <button
                   type="button"
-                  onClick={() => navigate('/user/edit')}
+                  onClick={() => navigate(ROUTES.USER_EDIT)}
                   className="flex cursor-pointer items-center justify-center rounded-[6px] px-[12px] py-[6px] typo-popup-caption text-text-black"
                   role="menuitem"
                 >
@@ -256,14 +257,14 @@ export default function Header({
           <div className="flex shrink-0 items-center gap-[8px]">
             <button
               type="button"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate(ROUTES.LOGIN)}
               className="flex cursor-pointer items-center justify-center rounded-[6px] px-[12px] py-[6px] typo-navbar-button text-text-black transition-colors hover:rounded-full hover:text-navbar-blue"
             >
               로그인
             </button>
             <button
               type="button"
-              onClick={() => navigate('/signup')}
+              onClick={() => navigate(ROUTES.SIGNUP)}
               className="group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-full bg-button-blue px-[12px] py-[6px] typo-navbar-button text-white"
             >
               회원가입

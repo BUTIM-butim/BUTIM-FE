@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 
 import Header from '../components/layout/Header';
 import GoIcon from '../components/common/icons/GoIcon';
+import { ROUTES } from '../constants/routes';
+import type { PreviewCardTone } from '../types/main';
 import heroBackground from '../assets/images/hero-background.svg';
 import symbolGraphic from '../assets/images/symbol-graphic.svg';
 import calendarIcon from '../assets/images/icon-calendar.svg';
@@ -11,7 +13,7 @@ import cardBlueGraphic from '../assets/images/card-blue-graphic.svg';
 import cardGreenGraphic from '../assets/images/card-green-graphic.svg';
 
 type PreviewCardProps = {
-  tone: 'blue' | 'green';
+  tone: PreviewCardTone;
 };
 
 const CardTitleIcon = ({ tone }: PreviewCardProps) => {
@@ -138,7 +140,7 @@ const MainPage = () => {
 
             <button
               type="button"
-              onClick={() => navigate('/accident')}
+              onClick={() => navigate(ROUTES.ACCIDENT)}
               className="flex cursor-pointer items-center gap-[10px] rounded-[10px] bg-button-blue px-[18px] py-[14px] typo-button-main-hero text-white"
             >
               정보 입력하고 결과 확인하기

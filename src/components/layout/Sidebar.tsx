@@ -65,7 +65,7 @@ const NumberCircle = ({
   if (state === 'done') {
     return (
       <span className="flex h-[24px] w-[24px] shrink-0 items-center justify-center">
-        <span className="flex h-[18.35px] w-[18.35px] shrink-0 items-center justify-center rounded-full bg-[#4E5A6C]">
+        <span className="flex h-[19.5px] w-[19.5px] shrink-0 items-center justify-center rounded-full bg-number-gray">
           <CheckIcon size={21} />
         </span>
       </span>
@@ -76,13 +76,10 @@ const NumberCircle = ({
     return <ProgressDot state="active" size={21} />;
   }
 
-  const bgColor = state === 'active' ? '#4E5A6C' : '#C7CED9';
-
   return (
     <span className="flex h-[24px] w-[24px] shrink-0 items-center justify-center">
       <span
-        className="flex h-[19.5px] w-[19.5px] items-center justify-center rounded-full text-[12px] font-semibold leading-none text-white"
-        style={{ backgroundColor: bgColor }}
+        className={`flex h-[19.5px] w-[19.5px] items-center justify-center rounded-full text-[12px] font-semibold leading-none text-white ${state === 'active' ? 'bg-number-gray' : 'bg-line-gray'}`}
       >
         {number}
       </span>
@@ -152,12 +149,12 @@ const MainStepRow = ({
 
   const textClassName =
     state === 'blueActive'
-      ? 'text-[#185DC5] text-[18px] leading-[230%]'
+      ? 'typo-sidebar-title-bold text-navbar-blue'
       : state === 'active'
-        ? 'text-[#475161] text-[18px] leading-[230%]'
+        ? 'typo-sidebar-title-bold text-title-gray'
         : state === 'done'
-          ? 'text-[#4E5A6C] text-[16px] leading-[230%]'
-          : 'text-[#9CA3AF] text-[16px] leading-[230%]';
+          ? 'typo-sidebar-title text-number-gray'
+          : 'typo-sidebar-title text-placeholder-gray';
 
   return (
     <div
@@ -169,9 +166,7 @@ const MainStepRow = ({
 
       <div className="relative z-10 flex h-full items-center gap-[15px]">
         <NumberCircle number={number} state={state} />
-        <span
-          className={`flex items-center whitespace-nowrap font-medium tracking-[-0.02em] ${textClassName}`}
-        >
+        <span className={`flex items-center whitespace-nowrap ${textClassName}`}>
           {label}
         </span>
       </div>
@@ -190,10 +185,10 @@ const SubStepRow = ({
 
   const textClassName =
     state === 'active'
-      ? 'text-[#185DC5]'
+      ? 'text-navbar-blue'
       : state === 'done'
-        ? 'text-[#4E5A6C]'
-        : 'text-[#9CA3AF]';
+        ? 'text-number-gray'
+        : 'text-placeholder-gray';
 
   return (
     <div className="relative flex h-[37px] w-[195px] shrink-0 items-center px-[39px]">
@@ -203,9 +198,7 @@ const SubStepRow = ({
 
       <div className="relative z-10 flex h-full items-center gap-[15px]">
         <ProgressDot state={state} size={21} />
-        <span
-          className={`flex items-center whitespace-nowrap text-[16px] font-medium leading-[230%] tracking-[-0.02em] ${textClassName}`}
-        >
+        <span className={`flex items-center whitespace-nowrap typo-sidebar-title ${textClassName}`}>
           {label}
         </span>
       </div>
