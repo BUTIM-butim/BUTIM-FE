@@ -9,8 +9,12 @@ export type NavbarMenuItem = {
 export type NavbarProps = ComponentPropsWithoutRef<"header"> & {
   menus?: NavbarMenuItem[];
   activeMenuId?: string;
+  isLoggedIn?: boolean;
   userName?: string;
+  hasNotification?: boolean;
   onMenuClick?: (menu: NavbarMenuItem) => void;
+  onLogout?: () => void;
+  onWithdraw?: () => void;
 };
 
 export type SidebarSubItem = {
