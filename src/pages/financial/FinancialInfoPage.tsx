@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type {
   FinancialStep,
   FundStatusData,
@@ -16,6 +17,16 @@ import SupportTargetForm from '../../components/financial/SupportTargetForm';
 import Button from '../../components/common/button/Button';
 
 type SupportTargetStep = 'basic' | 'dependent';
+
+type InputProgress = {
+  lastPath?: string;
+  financialStep?: FinancialStep;
+  supportTargetStep?: SupportTargetStep;
+  hasAccidentInfo?: boolean;
+  hasFinancialInfo?: boolean;
+};
+
+const INPUT_PROGRESS_STORAGE_KEY = 'butim-input-progress';
 
 const initialFundStatus: FundStatusData = {
   currentAssets: '',
@@ -41,7 +52,6 @@ const initialSupportTarget: SupportTargetData = {
   isPregnant: null,
 
   hasDisability: null,
-  disabilityGrade: '',
 };
 
 type FundStatusErrors = Partial<Record<keyof FundStatusData, boolean>>;
@@ -49,10 +59,48 @@ type SupportTargetErrors = Partial<Record<keyof SupportTargetData, boolean>>;
 
 const removeComma = (value: string) => value.replaceAll(',', '').trim();
 
+const getInputProgress = (): InputProgress | null => {
+  const raw = localStorage.getItem(INPUT_PROGRESS_STORAGE_KEY);
+
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw) as InputProgress;
+  } catch {
+    return null;
+  }
+};
+
+const saveInputProgress = (progress: InputProgress) => {
+  const prev = getInputProgress();
+
+  localStorage.setItem(
+    INPUT_PROGRESS_STORAGE_KEY,
+    JSON.stringify({
+      ...prev,
+      ...progress,
+    }),
+  );
+};
+
+const getInitialFinancialStep = (): FinancialStep => {
+  const progress = getInputProgress();
+
+  return progress?.financialStep ?? 'fund-status';
+};
+
+const getInitialSupportTargetStep = (): SupportTargetStep => {
+  const progress = getInputProgress();
+
+  return progress?.supportTargetStep ?? 'basic';
+};
+
 export default function FinancialInfoPage() {
-  const [step, setStep] = useState<FinancialStep>('fund-status');
+  const navigate = useNavigate();
+
+  const [step, setStep] = useState<FinancialStep>(getInitialFinancialStep);
   const [supportTargetStep, setSupportTargetStep] =
-    useState<SupportTargetStep>('basic');
+    useState<SupportTargetStep>(getInitialSupportTargetStep);
 
   const [fundStatus, setFundStatus] =
     useState<FundStatusData>(initialFundStatus);
@@ -71,6 +119,15 @@ export default function FinancialInfoPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    saveInputProgress({
+      lastPath: '/financial',
+      financialStep: step,
+      supportTargetStep,
+      hasFinancialInfo: false,
+    });
+  }, [step, supportTargetStep]);
 
   useEffect(() => {
     financialInfoApi
@@ -109,8 +166,13 @@ export default function FinancialInfoPage() {
           isPregnant: data.isPregnant ?? null,
 
           hasDisability: data.hasDisability ?? null,
-          disabilityGrade:
-            data.disabilityGrade != null ? String(data.disabilityGrade) : '',
+        });
+
+        saveInputProgress({
+          lastPath: '/financial',
+          financialStep: 'fund-status',
+          supportTargetStep: 'basic',
+          hasFinancialInfo: true,
         });
       })
       .catch(() => {
@@ -141,10 +203,6 @@ export default function FinancialInfoPage() {
       isPregnant: supportTarget.isPregnant === null,
       hasDisability: supportTarget.hasDisability === null,
     };
-
-    if (supportTarget.hasDisability === true) {
-      errors.disabilityGrade = !supportTarget.disabilityGrade.trim();
-    }
 
     setSupportTargetErrors(errors);
 
@@ -177,12 +235,25 @@ export default function FinancialInfoPage() {
     if (step === 'support-target' && supportTargetStep === 'dependent') {
       setSupportTargetStep('basic');
       setSupportTargetErrors({});
+
+      saveInputProgress({
+        lastPath: '/financial',
+        financialStep: 'support-target',
+        supportTargetStep: 'basic',
+      });
+
       return;
     }
 
     if (step === 'support-target' && supportTargetStep === 'basic') {
       setStep('fund-status');
       setSupportTargetErrors({});
+
+      saveInputProgress({
+        lastPath: '/financial',
+        financialStep: 'fund-status',
+        supportTargetStep: 'basic',
+      });
     }
   };
 
@@ -200,6 +271,13 @@ export default function FinancialInfoPage() {
       setFundStatusErrors({});
       setStep('support-target');
       setSupportTargetStep('basic');
+
+      saveInputProgress({
+        lastPath: '/financial',
+        financialStep: 'support-target',
+        supportTargetStep: 'basic',
+      });
+
       return;
     }
 
@@ -213,6 +291,13 @@ export default function FinancialInfoPage() {
 
       setSupportTargetErrors({});
       setSupportTargetStep('dependent');
+
+      saveInputProgress({
+        lastPath: '/financial',
+        financialStep: 'support-target',
+        supportTargetStep: 'dependent',
+      });
+
       return;
     }
 
@@ -264,11 +349,6 @@ export default function FinancialInfoPage() {
 
       hasDisability: supportTarget.hasDisability ?? false,
 
-      disabilityGrade:
-        supportTarget.hasDisability === true && supportTarget.disabilityGrade
-          ? Number(removeComma(supportTarget.disabilityGrade))
-          : undefined,
-
       currentEmploymentStatus:
         fundStatus.currentEmploymentStatus as EmploymentStatusEnum,
     };
@@ -281,8 +361,17 @@ export default function FinancialInfoPage() {
         setHasExisting(true);
       }
 
+      saveInputProgress({
+        lastPath: '/strategy/recommend',
+        financialStep: 'support-target',
+        supportTargetStep: 'dependent',
+        hasFinancialInfo: true,
+      });
+
       setSupportTargetErrors({});
       setError(null);
+
+      navigate('/strategy/recommend');
     } catch (e) {
       setError(e instanceof Error ? e.message : '저장에 실패했습니다.');
     } finally {
@@ -299,7 +388,10 @@ export default function FinancialInfoPage() {
     <div className="min-h-screen bg-background-blue">
       <Header />
 
-      <Sidebar currentSection="financial" currentStep={step} />
+      <Sidebar
+        currentSectionId="financial"
+        currentSubSectionId={step === 'fund-status' ? 'funding' : 'supportTarget'}
+      />
 
       <main className="relative ml-[288px] min-h-screen overflow-hidden pt-[64px]">
         <div className="pointer-events-none absolute right-[-35px] top-[205px] opacity-[0.03]">

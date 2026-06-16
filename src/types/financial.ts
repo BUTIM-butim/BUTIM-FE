@@ -51,7 +51,6 @@ export type SupportTargetData = {
   isPregnant: boolean | null;
 
   hasDisability: boolean | null;
-  disabilityGrade: string;
 };
 
 // 백엔드 API 요청 바디
@@ -76,7 +75,6 @@ export type FinancialInfoPayload = {
   isPregnant: boolean;
 
   hasDisability: boolean;
-  disabilityGrade?: number;
 };
 
 // 백엔드 API 응답 바디
@@ -104,5 +102,4 @@ export type FinancialInfoResponse = {
   isPregnant: boolean;
 
   hasDisability: boolean;
-  disabilityGrade?: number;
 };

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
 
 import MainPage from "../pages/MainPage";
@@ -11,6 +11,8 @@ import FinancialInfoPage from "../pages/financial/FinancialInfoPage";
 import FinancialSupportInfoPage from "../pages/financial/FinancialSupportInfoPage";
 import LogoutTestPage from "../pages/dev/LogoutTestPage"; // 로그아웃 네브바 연결 후 삭제
 import WithdrawTestPage from "../pages/dev/WithdrawTestPage"; // 회원 탈퇴 네브바 연결 후 삭제
+import StrategyRecommendationPage from "../pages/strategy/StrategyRecommendationPage";
+import StrategyResultPage from "../pages/strategy/StrategyResultPage";
 
 export const router = createBrowserRouter([
   {
@@ -30,11 +32,11 @@ export const router = createBrowserRouter([
     element: <ButtonTestPage />,
   },
   {
-    path: "/dev/modal-test",
+    path: ROUTES.MODAL_TEST,
     element: <ModalTestPage />,
   },
   {
-    path: "/user/edit",
+    path: ROUTES.USER_EDIT,
     element: <UserEditPage />,
   },
   {
@@ -52,5 +54,17 @@ export const router = createBrowserRouter([
   {
     path: "/withdraw-test",
     element: <WithdrawTestPage />,
+  },
+  {
+    path: ROUTES.STRATEGY,
+    element: <Navigate to={ROUTES.STRATEGY_RESULT} replace />,
+  },
+  {
+    path: ROUTES.STRATEGY_RECOMMEND,
+    element: <StrategyRecommendationPage />,
+  },
+  {
+    path: ROUTES.STRATEGY_RESULT,
+    element: <StrategyResultPage />,
   },
 ]);
