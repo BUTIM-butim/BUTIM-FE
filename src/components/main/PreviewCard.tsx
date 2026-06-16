@@ -11,11 +11,26 @@ import type { PreviewCardStatus, PreviewCardTone } from "../../types/main";
 type PreviewCardProps = {
   tone: PreviewCardTone;
   status: PreviewCardStatus;
+
+  predictionMinDays?: number;
+  predictionMaxDays?: number;
+  predictionMedianDays?: number;
+  actualExpectedDays?: number;
+
+  paymentExpectedDays?: number;
+  hasSupportItems?: boolean;
+  hasLoanItems?: boolean;
+
   onAction?: () => void;
 };
 
 type CardTitleIconProps = {
   tone: PreviewCardTone;
+};
+
+type StrategyDescriptionProps = {
+  hasSupportItems: boolean;
+  hasLoanItems: boolean;
 };
 
 const CardTitleIcon = ({ tone }: CardTitleIconProps) => {
@@ -31,13 +46,64 @@ const CardTitleIcon = ({ tone }: CardTitleIconProps) => {
   );
 };
 
-const PreviewCard = ({ tone, status, onAction }: PreviewCardProps) => {
+const StrategyDescription = ({
+  hasSupportItems,
+  hasLoanItems,
+}: StrategyDescriptionProps) => {
+  if (hasSupportItems && hasLoanItems) {
+    return (
+      <p className="absolute bottom-[126px] left-[20px] typo-card-body text-text-dark-gray">
+        <span className="font-semibold text-text-green">지원금</span>
+
+        <span> + </span>
+
+        <span className="font-semibold text-text-green">저금리 대출</span>
+
+        <span> 조합의 전략을 추천드립니다.</span>
+      </p>
+    );
+  }
+
+  if (hasSupportItems) {
+    return (
+      <p className="absolute bottom-[126px] left-[20px] typo-card-body text-text-dark-gray">
+        <span className="font-semibold text-text-green">지원금</span>
+
+        <span> 전략을 추천드립니다.</span>
+      </p>
+    );
+  }
+
+  if (hasLoanItems) {
+    return (
+      <p className="absolute bottom-[126px] left-[20px] typo-card-body text-text-dark-gray">
+        <span className="font-semibold text-text-green">저금리 대출</span>
+
+        <span> 전략을 추천드립니다.</span>
+      </p>
+    );
+  }
+
+  return null;
+};
+
+const PreviewCard = ({
+  tone,
+  status,
+  predictionMinDays,
+  predictionMaxDays,
+  predictionMedianDays,
+  actualExpectedDays,
+  paymentExpectedDays,
+  hasSupportItems = false,
+  hasLoanItems = false,
+  onAction,
+}: PreviewCardProps) => {
   const isBlue = tone === "blue";
   const isLocked = status === "locked";
 
   return (
     <section className="relative h-[322px] w-[606px] shrink-0 overflow-hidden rounded-[16px] bg-white shadow-card-blue">
-      {/* 카드 제목 */}
       <div className="absolute left-[20px] top-[28px] flex items-center gap-[8px]">
         <CardTitleIcon tone={tone} />
 
@@ -72,7 +138,6 @@ const PreviewCard = ({ tone, status, onAction }: PreviewCardProps) => {
         </h2>
       </div>
 
-      {/* 카드 내부 결과 영역 */}
       <div
         className={`absolute left-[20px] top-[88px] h-[214px] w-[566px] overflow-hidden rounded-[16px] ${
           isBlue ? "bg-card-background-blue" : "bg-card-background-green"
@@ -87,20 +152,23 @@ const PreviewCard = ({ tone, status, onAction }: PreviewCardProps) => {
 
         {isBlue ? (
           <>
-            {/* 승인 기간 결과 */}
             <div className="absolute left-[20px] top-[20px]">
               <p className="typo-card-body-medium text-text-dark-gray">
                 예상 승인 기간
               </p>
 
               <p className="mt-[6px] text-text-blue">
-                <span className="typo-figure-bold">85~110</span>
+                <span className="typo-figure-bold">
+                  {predictionMinDays ?? 0}~{predictionMaxDays ?? 0}
+                </span>
+
                 <span className="typo-figure">일</span>
               </p>
             </div>
 
             <p className="absolute bottom-[74px] left-[20px] typo-card-body text-text-dark-gray">
-              평균 97일 내 승인되며, 실제 지급 시점은 약 111일입니다.
+              평균 {predictionMedianDays ?? 0}일 내 승인되며, 실제 지급 시점은
+              약 {actualExpectedDays ?? 0}일입니다.
             </p>
 
             {!isLocked && (
@@ -120,20 +188,15 @@ const PreviewCard = ({ tone, status, onAction }: PreviewCardProps) => {
           </>
         ) : (
           <>
-            {/* 전략 결과 */}
             <p className="absolute left-[20px] top-[20px] typo-card-body text-text-dark-gray">
-              약 60일 후 자금이 부족할 것으로 예상됩니다.
+              약 {paymentExpectedDays ?? 0}일 후 자금이 부족할 것으로
+              예상됩니다.
             </p>
 
-            <p className="absolute bottom-[126px] left-[20px] typo-card-body text-text-dark-gray">
-              <span className="font-semibold text-text-green">지원금</span>
-
-              <span> + </span>
-
-              <span className="font-semibold text-text-green">저금리 대출</span>
-
-              <span> 조합의 전략을 추천드립니다.</span>
-            </p>
+            <StrategyDescription
+              hasSupportItems={hasSupportItems}
+              hasLoanItems={hasLoanItems}
+            />
 
             {!isLocked && (
               <div className="absolute bottom-[16px] right-[16px]">
@@ -153,7 +216,6 @@ const PreviewCard = ({ tone, status, onAction }: PreviewCardProps) => {
         )}
       </div>
 
-      {/* 잠금 상태 오버레이 */}
       {isLocked && (
         <div
           className={`absolute left-[20px] top-[88px] flex h-[214px] w-[566px] flex-col items-center justify-center gap-[10px] rounded-[16px] backdrop-blur-[5px] ${

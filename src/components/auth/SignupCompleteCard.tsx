@@ -1,12 +1,11 @@
 import Button from "../common/button/Button";
 import LogoFullLogin from "../common/logo/LogoFullLogin";
 
-const SignupCompleteCard = () => {
-  const handleStartInfoInput = () => {
-    // TODO: 산재 정보_1 페이지 생성 후 이동 연결
-    // 예: navigate("/accident-info/step1");
-  };
+type SignupCompleteCardProps = {
+  onStartInput: () => void;
+};
 
+const SignupCompleteCard = ({ onStartInput }: SignupCompleteCardProps) => {
   return (
     <section className="flex w-[630px] flex-col items-center rounded-[16px] bg-white shadow-popup">
       <div className="mt-[64px]">
@@ -27,7 +26,7 @@ const SignupCompleteCard = () => {
         variant="blue"
         size="popup"
         type="button"
-        onClick={handleStartInfoInput}
+        onClick={onStartInput}
         className="mt-[40px] mb-[50px] !w-[375px]"
       >
         정보 입력 시작하기
