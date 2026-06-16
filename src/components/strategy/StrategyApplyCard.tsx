@@ -1,23 +1,22 @@
 import { useState } from 'react';
 import Button from '../common/button/Button';
 
-type OptionValue = 'medical' | 'emergency' | 'none';
+export type ApplyOption = {
+  itemId: number;
+  label: string;
+};
+
+type SelectionKey = 'appliedItemIds' | 'receivedItemIds';
 
 type FormData = {
-  appliedSupports: OptionValue[];
-  receivedSupports: OptionValue[];
+  appliedItemIds: number[];
+  receivedItemIds: number[];
   hospitalCost: string;
   insuranceAmount: string;
   currentAssets: string;
 };
 
 type FormErrors = Partial<Record<keyof FormData, string>>;
-
-const SUPPORT_OPTIONS = [
-  { label: '재난적 의료비 지원 사업', value: 'medical' },
-  { label: '긴급복지 연료비 및 전기요금', value: 'emergency' },
-  { label: '없음', value: 'none' },
-] as const;
 
 const removeComma = (value: string) => value.replaceAll(',', '').trim();
 
@@ -97,10 +96,32 @@ function MoneyInput({
   );
 }
 
-export default function StrategyApplyCard() {
+export type RecalculatePayload = {
+  appliedItemIds: number[];
+  receivedItemIds: number[];
+  hospitalCost?: number;
+  insuranceAmount?: number;
+  currentAsset?: number;
+};
+
+type StrategyApplyCardProps = {
+  options: ApplyOption[];
+  strategyTitle: string;
+  submitting?: boolean;
+  submitError?: string | null;
+  onSubmit: (payload: RecalculatePayload) => void;
+};
+
+export default function StrategyApplyCard({
+  options,
+  strategyTitle,
+  submitting = false,
+  submitError = null,
+  onSubmit,
+}: StrategyApplyCardProps) {
   const [form, setForm] = useState<FormData>({
-    appliedSupports: [],
-    receivedSupports: [],
+    appliedItemIds: [],
+    receivedItemIds: [],
     hospitalCost: '',
     insuranceAmount: '',
     currentAssets: '',
@@ -108,25 +129,14 @@ export default function StrategyApplyCard() {
 
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const toggleOption = (
-    key: 'appliedSupports' | 'receivedSupports',
-    value: OptionValue,
-  ) => {
+  const toggleOption = (key: SelectionKey, itemId: number) => {
     setErrors({});
 
-    if (value === 'none') {
-      setForm((prev) => ({
-        ...prev,
-        [key]: prev[key].includes('none') ? [] : ['none'],
-      }));
-      return;
-    }
-
     setForm((prev) => {
-      const current = prev[key].filter((item) => item !== 'none');
-      const next = current.includes(value)
-        ? current.filter((item) => item !== value)
-        : [...current, value];
+      const current = prev[key];
+      const next = current.includes(itemId)
+        ? current.filter((id) => id !== itemId)
+        : [...current, itemId];
 
       return {
         ...prev,
@@ -138,17 +148,16 @@ export default function StrategyApplyCard() {
   const validate = () => {
     const nextErrors: FormErrors = {};
 
-    if (!isNumberText(form.hospitalCost)) {
+    if (form.hospitalCost && !isNumberText(form.hospitalCost)) {
       nextErrors.hospitalCost = '병원비는 숫자로 입력해주세요.';
     }
 
-    if (!isNumberText(form.insuranceAmount)) {
+    if (form.insuranceAmount && !isNumberText(form.insuranceAmount)) {
       nextErrors.insuranceAmount = '보험금은 숫자로 입력해주세요.';
     }
 
-    if (!isNumberText(form.currentAssets)) {
-      nextErrors.currentAssets =
-        '현재 자산은 950,000원 이상 또는 1,050,000원 이상으로 입력해주세요.';
+    if (form.currentAssets && !isNumberText(form.currentAssets)) {
+      nextErrors.currentAssets = '현재 자산은 숫자로 입력해주세요.';
     }
 
     setErrors(nextErrors);
@@ -161,7 +170,19 @@ export default function StrategyApplyCard() {
 
     if (!isValid) return;
 
-    // TODO: 전략 재계산 API 연결
+    onSubmit({
+      appliedItemIds: form.appliedItemIds,
+      receivedItemIds: form.receivedItemIds,
+      hospitalCost: form.hospitalCost
+        ? Number(removeComma(form.hospitalCost))
+        : undefined,
+      insuranceAmount: form.insuranceAmount
+        ? Number(removeComma(form.insuranceAmount))
+        : undefined,
+      currentAsset: form.currentAssets
+        ? Number(removeComma(form.currentAssets))
+        : undefined,
+    });
   };
 
   return (
@@ -178,16 +199,21 @@ export default function StrategyApplyCard() {
             신청한 지원금·저금리 대출
           </p>
           <p className="mt-[4px] text-[12px] leading-[15px] tracking-[-0.02em] text-placeholder-gray">
-            전략 1의 지원금·저금리 대출 중 신청한 전략을 선택해주세요. (복수 선택 가능)
+            {strategyTitle}의 지원금·저금리 대출 중 신청한 항목을 선택해주세요. (복수 선택 가능)
           </p>
 
           <div className="mt-[12px] grid w-[547px] grid-cols-2 gap-x-[24px] gap-y-[12px]">
-            {SUPPORT_OPTIONS.map((option) => (
+            {options.length === 0 && (
+              <p className="typo-warning-text text-placeholder-gray">
+                선택 가능한 항목이 없습니다.
+              </p>
+            )}
+            {options.map((option) => (
               <RadioOption
-                key={option.value}
+                key={option.itemId}
                 label={option.label}
-                selected={form.appliedSupports.includes(option.value)}
-                onClick={() => toggleOption('appliedSupports', option.value)}
+                selected={form.appliedItemIds.includes(option.itemId)}
+                onClick={() => toggleOption('appliedItemIds', option.itemId)}
               />
             ))}
           </div>
@@ -198,16 +224,21 @@ export default function StrategyApplyCard() {
             지급 받은 지원금·저금리 대출
           </p>
           <p className="mt-[4px] text-[12px] leading-[15px] tracking-[-0.02em] text-placeholder-gray">
-            전략 1의 지원금·저금리 대출 중 지급받은 전략을 선택해주세요. (복수 선택 가능)
+            {strategyTitle}의 지원금·저금리 대출 중 지급받은 항목을 선택해주세요. (복수 선택 가능)
           </p>
 
           <div className="mt-[12px] grid w-[547px] grid-cols-2 gap-x-[24px] gap-y-[12px]">
-            {SUPPORT_OPTIONS.map((option) => (
+            {options.length === 0 && (
+              <p className="typo-warning-text text-placeholder-gray">
+                선택 가능한 항목이 없습니다.
+              </p>
+            )}
+            {options.map((option) => (
               <RadioOption
-                key={option.value}
+                key={option.itemId}
                 label={option.label}
-                selected={form.receivedSupports.includes(option.value)}
-                onClick={() => toggleOption('receivedSupports', option.value)}
+                selected={form.receivedItemIds.includes(option.itemId)}
+                onClick={() => toggleOption('receivedItemIds', option.itemId)}
               />
             ))}
           </div>
@@ -237,7 +268,7 @@ export default function StrategyApplyCard() {
 
         <MoneyInput
           label="현재 자산"
-          caption="현재 자산에 변동되었다면 입력해주세요. 현재 총금액은 950,000원 이하 또는 1,050,000원 이상부터 입력 가능해요."
+          caption="현재 자산에 변동이 있다면 입력해주세요."
           value={form.currentAssets}
           error={errors.currentAssets}
           onChange={(value) => {
@@ -248,20 +279,27 @@ export default function StrategyApplyCard() {
 
         {Object.values(errors).some(Boolean) && (
           <p className="typo-warning-text text-warning-red">
-            ⓘ 입력한 항목이 없습니다. 값을 입력한 후 다시 계산해주세요.
+            ⓘ 입력한 값을 다시 확인해주세요.
+          </p>
+        )}
+
+        {submitError && (
+          <p className="typo-warning-text text-warning-red">
+            ⓘ {submitError}
           </p>
         )}
 
         <div className="flex w-[547px] justify-end">
-  <Button
-    variant="blue"
-    size="card"
-    className="!h-[37px] !rounded-[6px] !px-[16px] !text-[14px] !font-medium !leading-[17px]"
-    onClick={handleSubmit}
-  >
-    전략 다시 계산하기
-  </Button>
-</div>
+          <Button
+            variant="blue"
+            size="card"
+            className="!h-[37px] !rounded-[6px] !px-[16px] !text-[14px] !font-medium !leading-[17px]"
+            disabled={submitting}
+            onClick={handleSubmit}
+          >
+            {submitting ? '계산 중...' : '전략 다시 계산하기'}
+          </Button>
+        </div>
       </div>
     </div>
   );
