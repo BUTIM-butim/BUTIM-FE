@@ -2,6 +2,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 
 import { ROUTES } from "../constants/routes";
 import MainLayout from "../layouts/MainLayout";
+import ProtectedRoute from "./ProtectedRoute";
 
 import MainPage from "../pages/MainPage";
 import LoginPage from "../pages/auth/LoginPage";
@@ -43,16 +44,21 @@ export const router = createBrowserRouter([
         element: <StrategyRecommendationPage />,
       },
       {
-        path: ROUTES.STRATEGY_RESULT,
-        element: <StrategyResultPage />,
-      },
-      {
-        path: ROUTES.ACCIDENT,
-        element: <AccidentInfoPage />,
-      },
-      {
-        path: ROUTES.PERIOD,
-        element: <PeriodPage />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: ROUTES.ACCIDENT,
+            element: <AccidentInfoPage />,
+          },
+          {
+            path: ROUTES.PERIOD,
+            element: <PeriodPage />,
+          },
+          {
+            path: ROUTES.STRATEGY_RESULT,
+            element: <StrategyResultPage />,
+          },
+        ],
       },
       {
         path: ROUTES.FINANCIAL,
