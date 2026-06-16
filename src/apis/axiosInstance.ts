@@ -15,8 +15,7 @@ type TokenResponse = {
   refreshToken: string;
 };
 
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://43.201.114.143:8080";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 let refreshPromise: Promise<TokenResponse> | null = null;
 
