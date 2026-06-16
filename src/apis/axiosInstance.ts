@@ -5,9 +5,12 @@ type CustomInternalAxiosRequestConfig = InternalAxiosRequestConfig & {
 };
 
 type BaseResponse<T> = {
+  code?: number;
+  message?: string;
   data?: T;
   result?: T;
-  message?: string;
+  success?: boolean;
+  isSuccess?: boolean;
 };
 
 type TokenResponse = {
@@ -15,8 +18,7 @@ type TokenResponse = {
   refreshToken: string;
 };
 
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://43.201.114.143:8080";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 let refreshPromise: Promise<TokenResponse> | null = null;
 
@@ -78,6 +80,36 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
+const refreshTokens = async (): Promise<TokenResponse> => {
+  const refreshToken = getRefreshToken();
+
+  if (!refreshToken) {
+    throw new Error("리프레시 토큰이 없습니다.");
+  }
+
+  const response = await axios.post<BaseResponse<TokenResponse>>(
+    `${BASE_URL}/api/auth/refresh`,
+    {
+      refreshToken,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  const nextTokens = unwrapBaseResponse<TokenResponse>(response.data);
+
+  if (!nextTokens.accessToken || !nextTokens.refreshToken) {
+    throw new Error("재발급된 토큰이 올바르지 않습니다.");
+  }
+
+  saveTokens(nextTokens);
+
+  return nextTokens;
+};
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -93,9 +125,7 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const refreshToken = getRefreshToken();
-
-    if (!refreshToken) {
+    if (!getRefreshToken()) {
       clearTokens();
       return Promise.reject(error);
     }
@@ -104,25 +134,19 @@ axiosInstance.interceptors.response.use(
 
     try {
       if (!refreshPromise) {
-        refreshPromise = axiosInstance
-          .post<BaseResponse<TokenResponse>>("/api/auth/refresh", {
-            refreshToken,
-          })
-          .then((response) => unwrapBaseResponse<TokenResponse>(response.data))
-          .finally(() => {
-            refreshPromise = null;
-          });
+        refreshPromise = refreshTokens().finally(() => {
+          refreshPromise = null;
+        });
       }
 
       const nextTokens = await refreshPromise;
-
-      saveTokens(nextTokens);
 
       originalRequest.headers.Authorization = `Bearer ${nextTokens.accessToken}`;
 
       return axiosInstance(originalRequest);
     } catch (refreshError) {
       clearTokens();
+
       return Promise.reject(refreshError);
     }
   },

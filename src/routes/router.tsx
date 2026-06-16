@@ -64,4 +64,8 @@ export const router = createBrowserRouter([
     path: ROUTES.SIGNUP,
     element: <SignupPage />,
   },
+  {
+    path: ROUTES.FINANCIAL,
+    element: <FinancialInfoPage />,
+  },
 ]);
