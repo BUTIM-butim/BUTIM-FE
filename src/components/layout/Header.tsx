@@ -5,13 +5,6 @@ import logoFull from "../../assets/logo-full-login.svg";
 import { ROUTES } from "../../constants/routes";
 import GoIcon from "../common/icons/GoIcon";
 
-type InputProgress = {
-  lastPath?: string;
-  financialStep?: string;
-  supportTargetStep?: string;
-  hasAccidentInfo?: boolean;
-  hasFinancialInfo?: boolean;
-};
 
 type HeaderProps = {
   isLoggedIn?: boolean;
@@ -27,35 +20,10 @@ type NavItemProps = {
   onClick: () => void;
 };
 
-const INPUT_PROGRESS_STORAGE_KEY = "butim-input-progress";
-
 const cn = (...classes: Array<string | false | undefined>) => {
   return classes.filter(Boolean).join(" ");
 };
 
-const getInputProgress = (): InputProgress | null => {
-  const raw = localStorage.getItem(INPUT_PROGRESS_STORAGE_KEY);
-
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw) as InputProgress;
-  } catch {
-    return null;
-  }
-};
-
-const getNextInputPath = () => {
-  const progress = getInputProgress();
-
-  if (progress?.lastPath) {
-    return progress.lastPath;
-  }
-
-  return "/accident";
-};
 
 const Logo = () => (
   <img src={logoFull} alt="버팀" className="h-[30px] w-auto shrink-0" />
@@ -198,7 +166,7 @@ export default function Header({
           <NavItem
             label="정보 입력"
             active={isInfoActive}
-            onClick={() => navigate(getNextInputPath())}
+            onClick={() => navigate(ROUTES.ACCIDENT)}
           />
 
           <NavItem
