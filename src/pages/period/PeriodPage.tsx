@@ -268,7 +268,7 @@ export default function PeriodPage() {
         <button
           type="button"
           onClick={() =>
-            navigate(fromFlow ? ROUTES.FINANCIAL_INFO : ROUTES.STRATEGY_RESULT)
+            navigate(fromFlow ? ROUTES.FINANCIAL : ROUTES.STRATEGY_RESULT)
           }
           className="cursor-pointer flex items-center gap-[6px] rounded-[10px] bg-button-blue px-[16px] py-[12px] typo-navbar-button text-white"
         >

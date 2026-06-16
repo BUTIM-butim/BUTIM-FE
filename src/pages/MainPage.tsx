@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import LoginRequiredModal from "../components/auth/LoginRequiredModal";
 import Button from "../components/common/button/Button";
@@ -39,9 +39,19 @@ const getInputProgress = (): InputProgress => {
 
 const MainPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [mainResult, setMainResult] = useState<MainResult | null>(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(
+    () => Boolean((location.state as { showLoginModal?: boolean } | null)?.showLoginModal),
+  );
+    
+  const [mainResult, setMainResult] = useState<MainResult | null>(null); 
+
+  useEffect(() => {
+    if ((location.state as { showLoginModal?: boolean } | null)?.showLoginModal) {
+      window.history.replaceState({}, '');
+    }
+  }, []);
 
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
