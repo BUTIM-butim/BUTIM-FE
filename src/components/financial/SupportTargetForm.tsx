@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import type {
-  SupportTargetData,
-  DependentTypeEnum,
-} from '../../types/financial';
+import type { SupportTargetData } from '../../types/financial';
 import RegionSelectModal from './RegionSelectModal';
 
 type SupportTargetStep = 'basic' | 'dependent';
@@ -23,12 +20,6 @@ const HOUSEHOLD_TYPE_OPTIONS: Option[] = [
   { label: '기초생활수급자', value: 'BASIC_LIVELIHOOD_RECIPIENT' },
   { label: '차상위계층', value: 'NEAR_POVERTY' },
   { label: '해당 없음', value: 'NONE' },
-];
-
-const DEPENDENT_TYPE_OPTIONS: Option[] = [
-  { label: '자녀', value: 'CHILD' },
-  { label: '부모', value: 'PARENT' },
-  { label: '기타', value: 'ETC' },
 ];
 
 const BOOLEAN_OPTIONS = [
@@ -319,79 +310,42 @@ export default function SupportTargetForm({
                 value={data.hasDisability}
                 error={errors.hasDisability}
                 onChange={(value) => set('hasDisability')(value)}
-                />
+              />
             </>
           )}
 
           {step === 'dependent' && (
             <>
-              <FullInputField
-                label="가구원 수"
-                placeholder="가구원 수를 입력해주세요."
-                value={data.householdMemberCount}
-                error={errors.householdMemberCount}
-                unit="명"
-                onChange={(value) => set('householdMemberCount')(value)}
-              />
-
               <BooleanOptionField
                 label="부양 가족 여부"
                 value={data.hasDependent}
                 error={errors.hasDependent}
                 options={HAS_DEPENDENT_OPTIONS}
-                onChange={(value) => {
-                  onChange({
-                    ...data,
-                    hasDependent: value,
-                    dependentCount: value ? data.dependentCount : '',
-                    dependentType: value ? data.dependentType : '',
-                    hasChild: value ? data.hasChild : null,
-                  });
-                }}
+                onChange={(value) => set('hasDependent')(value)}
               />
 
-              {data.hasDependent && (
-                <>
-                  <FullInputField
-                    label="부양 가족 수"
-                    placeholder="부양 가족 수를 입력해주세요."
-                    value={data.dependentCount}
-                    error={errors.dependentCount}
-                    unit="명"
-                    onChange={(value) => set('dependentCount')(value)}
-                  />
+              <BooleanOptionField
+                label="자녀 여부"
+                value={data.hasChild}
+                error={errors.hasChild}
+                onChange={(value) =>
+                  onChange({
+                    ...data,
+                    hasChild: value,
+                    childCount: value ? data.childCount : '',
+                  })
+                }
+              />
 
-                  <OptionField
-                    label="부양 가족 유형"
-                    options={DEPENDENT_TYPE_OPTIONS}
-                    value={data.dependentType}
-                    error={errors.dependentType}
-                    onChange={(value) => {
-                      const dependentType = value as DependentTypeEnum;
-
-                      onChange({
-                        ...data,
-                        dependentType,
-                        hasChild:
-                          dependentType === 'CHILD' ? data.hasChild : null,
-                      });
-                    }}
-                  />
-
-                  {data.dependentType === 'CHILD' && (
-                    <BooleanOptionField
-                      label="다자녀가구 여부"
-                      value={data.hasChild}
-                      error={errors.hasChild}
-                      onChange={(value) => {
-                        onChange({
-                          ...data,
-                          hasChild: value,
-                        });
-                      }}
-                    />
-                  )}
-                </>
+              {data.hasChild && (
+                <FullInputField
+                  label="자녀 수"
+                  placeholder="자녀 수를 입력해주세요."
+                  value={data.childCount}
+                  error={errors.childCount}
+                  unit="명"
+                  onChange={(value) => set('childCount')(value)}
+                />
               )}
             </>
           )}

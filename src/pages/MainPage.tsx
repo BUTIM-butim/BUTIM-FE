@@ -42,22 +42,14 @@ const MainPage = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   /*
-   * 실제 로그인 상태 및 결과 API 연결 전 테스트용 값
+   * 로그인 여부는 accessToken 존재 여부로 판단합니다.
    *
-   * 1. 비로그인
-   * false, false, false
-   *
-   * 2. 로그인 + 결과 없음
-   * true, false, false
-   *
-   * 3. 로그인 + 승인 기간 결과만 있음
-   * true, true, false
-   *
-   * 4. 로그인 + 두 결과 모두 있음
-   * true, true, true
+   * 승인 기간 결과 및 전략 결과는
+   * 관련 API 연결 전까지 테스트용 값으로 사용합니다.
    */
-  const isLoggedIn = true;
-  const hasApprovalResult = true;
+  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
+
+  const hasApprovalResult = false;
   const hasStrategyResult = false;
 
   const approvalCardStatus: PreviewCardStatus = hasApprovalResult
@@ -70,10 +62,6 @@ const MainPage = () => {
 
   const hasAllResults = hasApprovalResult && hasStrategyResult;
 
-  /**
-   * 재정 정보 입력 페이지의 첫 단계로 이동합니다.
-   * 이전에 재정 정보를 입력하다 중단했더라도 fund-status부터 시작합니다.
-   */
   const moveToFinancialFirstStep = () => {
     const previousProgress = getInputProgress();
 
@@ -99,14 +87,17 @@ const MainPage = () => {
     }
 
     // 2. 로그인했지만 승인 기간 결과가 없는 상태
+    // 산재 정보 입력 화면으로 이동
     if (!hasApprovalResult) {
       navigate(ROUTES.ACCIDENT);
       return;
     }
 
     // 3. 승인 기간 결과는 있지만 전략 결과가 없는 상태
+    // 재정 정보 입력 첫 단계로 이동
     if (!hasStrategyResult) {
       moveToFinancialFirstStep();
+      return;
     }
   };
 
@@ -145,7 +136,6 @@ const MainPage = () => {
 
         {/* 메인 콘텐츠 */}
         <div className="relative z-10 mx-auto w-full max-w-[1512px] px-[120px] pb-[56px] pt-[80px]">
-          {/* 메인 문구 */}
           <section className="flex w-fit flex-col items-start gap-[36px]">
             <h1 className="typo-hero-title whitespace-nowrap text-text-black">
               산재 승인까지, 소득 공백을{" "}
@@ -158,7 +148,7 @@ const MainPage = () => {
               <p>그 기간 동안 버틸 수 있는 지원 전략을 추천해드립니다.</p>
             </div>
 
-            {/* 버튼이 사라져도 카드가 위로 올라가지 않도록 높이 유지 */}
+            {/* 버튼이 사라져도 카드 위치가 유지되도록 높이 고정 */}
             <div className="h-[54px]">
               {!hasAllResults && (
                 <Button
@@ -191,7 +181,7 @@ const MainPage = () => {
         </div>
       </main>
 
-      {/* 로그인 안내 모달 */}
+      {/* 비로그인 사용자 안내 모달 */}
       {isLoginModalOpen && (
         <LoginRequiredModal onClose={() => setIsLoginModalOpen(false)} />
       )}

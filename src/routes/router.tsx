@@ -6,6 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import MainPage from "../pages/MainPage";
 import LoginPage from "../pages/auth/LoginPage";
 import SignupPage from "../pages/auth/SignupPage";
+import AccidentInfoPage from "../pages/accident/AccidentInfoPage";
 import FinancialInfoPage from "../pages/financial/FinancialInfoPage";
 import FinancialSupportInfoPage from "../pages/financial/FinancialSupportInfoPage";
 import StrategyRecommendationPage from "../pages/strategy/StrategyRecommendationPage";
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
       {
         path: ROUTES.STRATEGY_RESULT,
         element: <StrategyResultPage />,
+      },
+      {
+        path: ROUTES.ACCIDENT,
+        element: <AccidentInfoPage />,
       },
     ],
   },
