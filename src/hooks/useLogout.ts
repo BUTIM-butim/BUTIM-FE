@@ -1,12 +1,10 @@
 import { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { postLogout } from "../apis/auth";
 import { clearTokens } from "../apis/axiosInstance";
 import { ROUTES } from "../constants/routes";
 
 export const useLogout = () => {
-  const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const logout = useCallback(async () => {
@@ -26,13 +24,9 @@ export const useLogout = () => {
     } finally {
       clearTokens();
 
-      navigate(ROUTES.MAIN, {
-        replace: true,
-      });
-
-      setIsLoggingOut(false);
+      window.location.replace(ROUTES.MAIN);
     }
-  }, [isLoggingOut, navigate]);
+  }, [isLoggingOut]);
 
   return {
     logout,

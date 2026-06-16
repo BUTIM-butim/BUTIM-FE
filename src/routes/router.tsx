@@ -26,10 +26,10 @@ export const router = createBrowserRouter([
         path: ROUTES.USER_EDIT,
         element: <UserEditPage />,
       },
-      {
-        path: ROUTES.FINANCIAL_INFO,
-        element: <FinancialInfoPage />,
-      },
+      // {
+      //   path: ROUTES.FINANCIAL_INFO,
+      //   element: <FinancialInfoPage />,
+      // },
       {
         path: ROUTES.FINANCIAL_SUPPORT_INFO,
         element: <FinancialSupportInfoPage />,

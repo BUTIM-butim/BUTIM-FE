@@ -1,4 +1,5 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 import logoFullLogin from "../../assets/logo-full-login.svg";
 import {
@@ -8,6 +9,7 @@ import {
   postSignup,
 } from "../../apis/auth";
 import { saveTokens } from "../../apis/axiosInstance";
+import { ROUTES } from "../../constants/routes";
 
 import TermsAgreementModal from "./TermsAgreementModal";
 import SignupCompleteCard from "./SignupCompleteCard";
@@ -54,11 +56,19 @@ type ErrorSlotProps = {
   message?: string;
 };
 
+type InputProgress = {
+  lastPath?: string;
+  financialStep?: "fund-status" | "support-target";
+  supportTargetStep?: "basic" | "dependent";
+  hasAccidentInfo?: boolean;
+  hasFinancialInfo?: boolean;
+};
+
 const REQUIRED_TERMS: TermKey[] = ["privacy", "service", "age"];
-
 const ALL_TERMS: TermKey[] = ["privacy", "service", "age", "sms"];
-
 const EMPTY_TERMS: TermKey[] = [];
+
+const INPUT_PROGRESS_STORAGE_KEY = "butim-input-progress";
 
 const TERM_CAPTION_LABELS: Record<TermKey, string> = {
   privacy: "개인정보 취급방침",
@@ -90,6 +100,8 @@ const SignupCard = ({
   initialTerms = EMPTY_TERMS,
   onEditComplete,
 }: SignupCardProps) => {
+  const navigate = useNavigate();
+
   const isEditMode = mode === "edit";
 
   const [name, setName] = useState(initialName);
@@ -102,11 +114,8 @@ const SignupCard = ({
   const [verifiedPhone, setVerifiedPhone] = useState(initialPhone);
 
   const [verificationCode, setVerificationCode] = useState("");
-
   const [isVerificationSent, setIsVerificationSent] = useState(false);
-
   const [isPhoneVerified, setIsPhoneVerified] = useState(Boolean(initialPhone));
-
   const [hasPhoneBeenChanged, setHasPhoneBeenChanged] = useState(false);
 
   const [selectedTerms, setSelectedTerms] = useState<TermKey[]>(initialTerms);
@@ -116,11 +125,8 @@ const SignupCard = ({
   );
 
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
-
   const [errors, setErrors] = useState<SignupErrors>({});
-
   const [isSignupCompleted, setIsSignupCompleted] = useState(false);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isAllRequiredTermsChecked = REQUIRED_TERMS.every((term) =>
@@ -456,9 +462,7 @@ const SignupCard = ({
 
   const handleConfirmTermsModal = (nextSelectedTerms: TermKey[]) => {
     setSelectedTerms(nextSelectedTerms);
-
     setIsTermsSelectedFromModal(nextSelectedTerms.length > 0);
-
     setIsTermsModalOpen(false);
 
     if (REQUIRED_TERMS.every((term) => nextSelectedTerms.includes(term))) {
@@ -518,9 +522,7 @@ const SignupCard = ({
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
-
     const trimmedPasswordConfirm = passwordConfirm.trim();
-
     const trimmedPhone = phone.trim();
 
     const phoneNumber = trimmedPhone.replaceAll("-", "");
@@ -604,6 +606,23 @@ const SignupCard = ({
     }
   };
 
+  const handleStartInput = () => {
+    const initialProgress: InputProgress = {
+      lastPath: ROUTES.ACCIDENT,
+      hasAccidentInfo: false,
+      hasFinancialInfo: false,
+    };
+
+    localStorage.setItem(
+      INPUT_PROGRESS_STORAGE_KEY,
+      JSON.stringify(initialProgress),
+    );
+
+    navigate(ROUTES.ACCIDENT, {
+      replace: true,
+    });
+  };
+
   const passwordStatus = errors.password ? "error" : "default";
 
   const phoneStatus =
@@ -626,7 +645,7 @@ const SignupCard = ({
   if (!isEditMode && isSignupCompleted) {
     return (
       <div className="flex min-h-[calc(100vh-48px)] items-center justify-center">
-        <SignupCompleteCard />
+        <SignupCompleteCard onStartInput={handleStartInput} />
       </div>
     );
   }
