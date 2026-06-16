@@ -4,6 +4,7 @@ import { periodApi, type PredictionResult } from '../../apis/period';
 import { ROUTES } from '../../constants/routes';
 import Sidebar from '../../components/layout/Sidebar';
 import CheckIcon from '../../components/common/icons/CheckIcon';
+import LogoFullLogin from '../../components/common/logo/LogoFullLogin';
 
 function formatDate(isoString: string): string {
   const d = new Date(isoString);
@@ -125,6 +126,7 @@ export default function PeriodPage() {
 
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [predicting, setPredicting] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -144,6 +146,7 @@ export default function PeriodPage() {
         setError('예측 정보를 불러오는 데 실패했습니다.');
       } finally {
         setPredicting(false);
+        setInitialized(true);
       }
     }
     load();
@@ -307,6 +310,49 @@ export default function PeriodPage() {
               )}
               {error && <p className="typo-warning-text text-warning-red">{error}</p>}
               {cards}
+            </div>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  // ── 헤더 진입 + GET 로딩 중 ──
+  if (!fromFlow && !initialized) {
+    return <div className="min-h-screen bg-background-blue" />;
+  }
+
+  // ── 헤더 진입 + 데이터 없음 (Card/No Result) ──
+  if (!fromFlow && initialized && !result) {
+    return (
+      <div className="min-h-screen bg-background-blue">
+        <main className="relative min-h-screen overflow-hidden pt-[64px]">
+          <div className="pointer-events-none absolute left-0 right-0 top-[64px] h-[542px] opacity-70">
+            <div className="absolute left-0 top-[-147px] h-[437px] w-full bg-[#E9EFFD] blur-[2px]" />
+            <div className="absolute left-0 top-[-147px] h-[491px] w-full bg-gradient-to-r from-[#EDF2FD] from-[75%] to-[rgba(237,242,253,0.6)] blur-[2px]" />
+            <div className="absolute left-0 top-[-147px] h-[518px] w-full bg-gradient-to-r from-[#F1F5FD] from-[75%] to-[rgba(241,245,253,0.6)] blur-[2px]" />
+            <div className="absolute left-0 top-[-146px] h-[542px] w-full bg-gradient-to-r from-[#F8F9FE] from-[85%] to-[rgba(248,249,254,0.6)] blur-[2px]" />
+          </div>
+          <section className="relative z-10 flex min-h-[calc(100vh-64px)] items-center justify-center pb-[40px] pt-[40px]">
+            <div className="flex w-[630px] flex-col items-center rounded-[16px] bg-white px-[127px] pb-[50px] pt-[64px] shadow-card-blue">
+              <LogoFullLogin className="h-auto w-[137px]" />
+              <h1 className="mt-[40px] w-[396px] text-center text-[34px] font-semibold leading-[140%] tracking-[-0.02em] text-text-black">
+                예상 기간 확인을 위해
+                <br />
+                정보 입력이 필요합니다
+              </h1>
+              <p className="mt-[20px] w-[396px] text-center text-[20px] font-normal leading-[160%] tracking-[-0.02em] text-popup-gray">
+                정보 입력을 완료하면 입력하신 정보를 바탕으로
+                <br />
+                예상 승인 기간과 예측 신뢰도를 확인할 수 있습니다.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate(ROUTES.ACCIDENT)}
+                className="mt-[40px] flex h-[53px] w-[396px] cursor-pointer items-center justify-center rounded-[10px] bg-button-blue text-[18px] font-semibold leading-[21px] text-white"
+              >
+                정보 입력하러 가기
+              </button>
             </div>
           </section>
         </main>
