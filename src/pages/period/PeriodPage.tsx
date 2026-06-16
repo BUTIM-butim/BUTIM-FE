@@ -119,24 +119,26 @@ function ReliabilityProgressBar({
 export default function PeriodPage() {
   const navigate = useNavigate();
   const [result, setResult] = useState<PredictionResult | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [predicting, setPredicting] = useState(false); // POST 중일 때만 true
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        // 기존 결과가 있으면 바로 표시, 없으면 새 예측 실행
+        // GET: 조용히 조회, 로딩 표시 없음
         const existing = await periodApi.getExisting();
         if (existing) {
           setResult(existing);
-        } else {
-          const newResult = await periodApi.predict();
-          setResult(newResult);
+          return;
         }
+        // 없을 때만 POST + 로딩 표시
+        setPredicting(true);
+        const newResult = await periodApi.predict();
+        setResult(newResult);
       } catch {
         setError('예측 정보를 불러오는 데 실패했습니다.');
       } finally {
-        setLoading(false);
+        setPredicting(false);
       }
     }
     load();
@@ -165,7 +167,7 @@ export default function PeriodPage() {
               </p>
             </div>
 
-            {loading && (
+            {predicting && (
               <p className="typo-navbar-button text-title-gray">
                 예측 중입니다...
               </p>
@@ -268,7 +270,7 @@ export default function PeriodPage() {
                         {/* 유사 판례 버튼 */}
                         <button
                           type="button"
-                          className="typo-navbar-button text-navbar-blue"
+                          className="cursor-pointer typo-navbar-button text-navbar-blue"
                         >
                           유사 판례 {result.similarCaseCount}건 기반 분석
                         </button>
@@ -324,7 +326,7 @@ export default function PeriodPage() {
                   <button
                     type="button"
                     onClick={() => navigate(ROUTES.FINANCIAL_INFO)}
-                    className="flex items-center gap-[6px] rounded-[10px] bg-button-blue px-[16px] py-[12px] typo-navbar-button text-white"
+                    className="cursor-pointer flex items-center gap-[6px] rounded-[10px] bg-button-blue px-[16px] py-[12px] typo-navbar-button text-white"
                   >
                     재정 정보 입력하고 전략 확인하기
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
