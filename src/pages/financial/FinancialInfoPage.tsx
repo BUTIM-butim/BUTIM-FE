@@ -7,7 +7,6 @@ import type {
   IncomeLevelEnum,
   EmploymentStatusEnum,
   HouseholdTypeEnum,
-  DependentTypeEnum,
 } from '../../types/financial';
 import { financialInfoApi } from '../../apis/financialInfo';
 import Header from '../../components/layout/Header';
@@ -41,13 +40,10 @@ const initialSupportTarget: SupportTargetData = {
 
   householdType: '',
 
-  householdMemberCount: '',
-
   hasDependent: null,
-  dependentCount: '',
-  dependentType: '',
 
   hasChild: null,
+  childCount: '',
 
   isPregnant: null,
 
@@ -151,17 +147,10 @@ export default function FinancialInfoPage() {
 
           householdType: data.householdType ?? '',
 
-          householdMemberCount:
-            data.householdMemberCount != null
-              ? String(data.householdMemberCount)
-              : '',
-
           hasDependent: data.hasDependent ?? null,
-          dependentCount:
-            data.dependentCount != null ? String(data.dependentCount) : '',
-          dependentType: data.dependentType ?? '',
 
           hasChild: data.hasChild ?? null,
+          childCount: data.childCount != null ? String(data.childCount) : '',
 
           isPregnant: data.isPregnant ?? null,
 
@@ -204,6 +193,7 @@ export default function FinancialInfoPage() {
       hasDisability: supportTarget.hasDisability === null,
     };
 
+
     setSupportTargetErrors(errors);
 
     return !Object.values(errors).some(Boolean);
@@ -211,17 +201,12 @@ export default function FinancialInfoPage() {
 
   const validateSupportTargetDependent = () => {
     const errors: SupportTargetErrors = {
-      householdMemberCount: !removeComma(supportTarget.householdMemberCount),
       hasDependent: supportTarget.hasDependent === null,
+      hasChild: supportTarget.hasChild === null,
     };
 
-    if (supportTarget.hasDependent === true) {
-      errors.dependentCount = !removeComma(supportTarget.dependentCount);
-      errors.dependentType = !supportTarget.dependentType;
-
-      if (supportTarget.dependentType === 'CHILD') {
-        errors.hasChild = supportTarget.hasChild === null;
-      }
+    if (supportTarget.hasChild === true) {
+      errors.childCount = !removeComma(supportTarget.childCount);
     }
 
     setSupportTargetErrors(errors);
@@ -323,27 +308,14 @@ export default function FinancialInfoPage() {
       incomeLevel: fundStatus.incomeLevel as IncomeLevelEnum,
       householdType: supportTarget.householdType as HouseholdTypeEnum,
 
-      householdMemberCount: Number(
-        removeComma(supportTarget.householdMemberCount),
-      ),
-
       hasDependent: supportTarget.hasDependent ?? false,
 
-      dependentCount:
-        supportTarget.hasDependent === true && supportTarget.dependentCount
-          ? Number(removeComma(supportTarget.dependentCount))
-          : undefined,
+      hasChild: supportTarget.hasChild ?? false,
 
-      dependentType:
-        supportTarget.hasDependent === true && supportTarget.dependentType
-          ? (supportTarget.dependentType as DependentTypeEnum)
+      childCount:
+        supportTarget.hasChild === true && supportTarget.childCount
+          ? Number(removeComma(supportTarget.childCount))
           : undefined,
-
-      hasChild:
-        supportTarget.hasDependent === true &&
-        supportTarget.dependentType === 'CHILD'
-          ? supportTarget.hasChild ?? false
-          : false,
 
       isPregnant: supportTarget.isPregnant ?? false,
 
