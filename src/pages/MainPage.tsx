@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import LoginRequiredModal from "../components/auth/LoginRequiredModal";
 import Button from "../components/common/button/Button";
@@ -38,8 +38,17 @@ const getInputProgress = (): InputProgress => {
 
 const MainPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(
+    () => Boolean((location.state as { showLoginModal?: boolean } | null)?.showLoginModal),
+  );
+
+  useEffect(() => {
+    if ((location.state as { showLoginModal?: boolean } | null)?.showLoginModal) {
+      window.history.replaceState({}, '');
+    }
+  }, []);
 
   /*
    * 로그인 여부는 accessToken 존재 여부로 판단합니다.

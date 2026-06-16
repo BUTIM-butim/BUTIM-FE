@@ -122,15 +122,20 @@ export default function Header({
   }, []);
 
   const pathname = location.pathname;
+  const fromFlow = Boolean(
+    (location.state as { fromFlow?: boolean } | null)?.fromFlow,
+  );
 
   const isInfoActive =
     pathname.startsWith("/accident") ||
     pathname.startsWith("/financial") ||
     pathname.startsWith("/information") ||
-    pathname === "/strategy/recommend";
+    pathname === "/strategy/recommend" ||
+    (pathname.startsWith("/period") && fromFlow);
 
   const isPeriodActive =
-    pathname.startsWith("/period") || pathname.startsWith("/approval");
+    (pathname.startsWith("/period") && !fromFlow) ||
+    pathname.startsWith("/approval");
 
   const isStrategyActive =
     pathname === "/strategy/result" || pathname.startsWith("/strategy/result/");
