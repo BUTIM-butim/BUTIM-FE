@@ -5,27 +5,27 @@ export const MEDIAN_INCOME_OPTIONS = [
   },
   {
     label: '32% 초과 ~ 40% 이하 (의료급여)',
-    value: 'BETWEEN_32_40',
+    value: 'OVER_32_TO_40',
   },
   {
     label: '40% 초과 ~ 48% 이하 (주거급여)',
-    value: 'BETWEEN_40_48',
+    value: 'OVER_40_TO_48',
   },
   {
     label: '48% 초과 ~ 50% 이하 (교육급여)',
-    value: 'BETWEEN_48_50',
+    value: 'OVER_48_TO_50',
   },
   {
     label: '50% 초과 ~ 100% 이하',
-    value: 'BETWEEN_50_100',
+    value: 'OVER_50_TO_100',
   },
   {
     label: '100% 초과 ~ 120% 이하',
-    value: 'BETWEEN_100_120',
+    value: 'OVER_100_TO_120',
   },
   {
     label: '120% 초과 ~ 150% 이하',
-    value: 'BETWEEN_120_150',
+    value: 'OVER_120_TO_150',
   },
   {
     label: '150% 초과',
@@ -40,11 +40,11 @@ export const MEDIAN_INCOME_OPTIONS = [
 export const EMPLOYMENT_STATUS_OPTIONS = [
   {
     label: '재직 중 (정규직/계약직)',
-    value: 'EMPLOYED',
+    value: 'FULL_TIME',
   },
   {
     label: '일용직·단기 근로자',
-    value: 'TEMPORARY_WORKER',
+    value: 'PART_TIME',
   },
   {
     label: '특수형태근로자·프리랜서',

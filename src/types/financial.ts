@@ -24,8 +24,6 @@ export type HouseholdTypeEnum =
   | 'NEAR_POVERTY'
   | 'NONE';
 
-export type DependentTypeEnum = 'CHILD' | 'PARENT' | 'ETC';
-
 // Step 1 폼 상태 (입력값은 string으로 관리)
 export type FundStatusData = {
   currentAssets: string;
@@ -40,13 +38,11 @@ export type SupportTargetData = {
   regionName: string;
 
   householdType: HouseholdTypeEnum | '';
-  householdMemberCount: string;
 
   hasDependent: boolean | null;
-  dependentCount: string;
-  dependentType: DependentTypeEnum | '';
 
   hasChild: boolean | null;
+  childCount: string;
 
   isPregnant: boolean | null;
 
@@ -64,17 +60,16 @@ export type FinancialInfoPayload = {
   currentEmploymentStatus: EmploymentStatusEnum;
 
   householdType: HouseholdTypeEnum;
-  householdMemberCount: number;
 
   hasDependent: boolean;
-  dependentCount?: number;
-  dependentType?: DependentTypeEnum;
 
   hasChild: boolean;
+  childCount?: number;
 
   isPregnant: boolean;
 
   hasDisability: boolean;
+  disabilityGrade?: number;
 };
 
 // 백엔드 API 응답 바디
@@ -91,15 +86,14 @@ export type FinancialInfoResponse = {
   currentEmploymentStatus: EmploymentStatusEnum;
 
   householdType: HouseholdTypeEnum;
-  householdMemberCount: number;
 
   hasDependent: boolean;
-  dependentCount?: number;
-  dependentType?: DependentTypeEnum;
 
   hasChild: boolean;
+  childCount?: number;
 
   isPregnant: boolean;
 
   hasDisability: boolean;
+  disabilityGrade?: number;
 };
