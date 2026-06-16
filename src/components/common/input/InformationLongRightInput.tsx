@@ -9,6 +9,7 @@ type InformationLongRightInputProps = Omit<
   label: string;
   caption?: string;
   status?: InputStatus;
+  error?: boolean;
   rightType?: InputRightType;
   measure?: string;
   onRightClick?: () => void;
@@ -19,6 +20,7 @@ const InformationLongRightInput = ({
   label,
   caption,
   status = "default",
+  error = false,
   rightType = "measure",
   measure = "measure",
   onRightClick,
@@ -26,6 +28,8 @@ const InformationLongRightInput = ({
   containerClassName = "",
   ...props
 }: InformationLongRightInputProps) => {
+  const inputStatus: InputStatus = error ? "error" : status;
+
   return (
     <div className={`flex flex-col gap-[14px] ${containerClassName}`}>
       <InformationLabel htmlFor={id} label={label} caption={caption} />
@@ -33,7 +37,7 @@ const InformationLongRightInput = ({
       <InputBase
         id={id}
         inputSize="informationLong"
-        status={status}
+        status={inputStatus}
         rightType={rightType}
         measure={measure}
         onRightClick={onRightClick}
