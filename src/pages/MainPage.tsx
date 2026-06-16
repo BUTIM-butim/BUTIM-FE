@@ -12,6 +12,30 @@ import { ROUTES } from "../constants/routes";
 
 import type { PreviewCardStatus } from "../types/main";
 
+type InputProgress = {
+  lastPath?: string;
+  financialStep?: "fund-status" | "support-target";
+  supportTargetStep?: "basic" | "dependent";
+  hasAccidentInfo?: boolean;
+  hasFinancialInfo?: boolean;
+};
+
+const INPUT_PROGRESS_STORAGE_KEY = "butim-input-progress";
+
+const getInputProgress = (): InputProgress => {
+  const savedProgress = localStorage.getItem(INPUT_PROGRESS_STORAGE_KEY);
+
+  if (!savedProgress) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(savedProgress) as InputProgress;
+  } catch {
+    return {};
+  }
+};
+
 const MainPage = () => {
   const navigate = useNavigate();
 
@@ -32,8 +56,8 @@ const MainPage = () => {
    * 4. 로그인 + 두 결과 모두 있음
    * true, true, true
    */
-  const isLoggedIn = false;
-  const hasApprovalResult = false;
+  const isLoggedIn = true;
+  const hasApprovalResult = true;
   const hasStrategyResult = false;
 
   const approvalCardStatus: PreviewCardStatus = hasApprovalResult
@@ -46,44 +70,52 @@ const MainPage = () => {
 
   const hasAllResults = hasApprovalResult && hasStrategyResult;
 
+  /**
+   * 재정 정보 입력 페이지의 첫 단계로 이동합니다.
+   * 이전에 재정 정보를 입력하다 중단했더라도 fund-status부터 시작합니다.
+   */
+  const moveToFinancialFirstStep = () => {
+    const previousProgress = getInputProgress();
+
+    localStorage.setItem(
+      INPUT_PROGRESS_STORAGE_KEY,
+      JSON.stringify({
+        ...previousProgress,
+        lastPath: ROUTES.FINANCIAL,
+        financialStep: "fund-status",
+        supportTargetStep: "basic",
+        hasFinancialInfo: false,
+      }),
+    );
+
+    navigate(ROUTES.FINANCIAL);
+  };
+
   const handleStartClick = () => {
-    // 비로그인 상태
+    // 1. 로그인하지 않은 상태
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
       return;
     }
 
-    // 로그인했지만 승인 기간 결과가 없는 상태
+    // 2. 로그인했지만 승인 기간 결과가 없는 상태
     if (!hasApprovalResult) {
       navigate(ROUTES.ACCIDENT);
       return;
     }
 
-    // 승인 기간 결과는 있지만 전략 결과가 없는 상태
+    // 3. 승인 기간 결과는 있지만 전략 결과가 없는 상태
     if (!hasStrategyResult) {
-      /*
-       * 재정 정보 입력 페이지 구현 후 연결
-       *
-       * navigate(ROUTES.FINANCE);
-       */
-      return;
+      moveToFinancialFirstStep();
     }
   };
 
   const handleApprovalResultClick = () => {
-    /*
-     * 승인 기간 결과 페이지 구현 후 연결
-     *
-     * navigate(ROUTES.APPROVAL_RESULT);
-     */
+    navigate(ROUTES.PERIOD);
   };
 
   const handleStrategyResultClick = () => {
-    /*
-     * 전략 결과 페이지 구현 후 연결
-     *
-     * navigate(ROUTES.STRATEGY_RESULT);
-     */
+    navigate(ROUTES.STRATEGY_RESULT);
   };
 
   return (
@@ -126,7 +158,7 @@ const MainPage = () => {
               <p>그 기간 동안 버틸 수 있는 지원 전략을 추천해드립니다.</p>
             </div>
 
-            {/* 버튼이 사라져도 54px 높이를 유지 */}
+            {/* 버튼이 사라져도 카드가 위로 올라가지 않도록 높이 유지 */}
             <div className="h-[54px]">
               {!hasAllResults && (
                 <Button
