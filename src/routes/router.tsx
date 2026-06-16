@@ -54,6 +54,10 @@ export const router = createBrowserRouter([
         path: ROUTES.PERIOD,
         element: <PeriodPage />,
       },
+      {
+        path: ROUTES.FINANCIAL,
+        element: <FinancialInfoPage />,
+      },
     ],
   },
   {
@@ -63,9 +67,5 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.SIGNUP,
     element: <SignupPage />,
-  },
-  {
-    path: ROUTES.FINANCIAL,
-    element: <FinancialInfoPage />,
   },
 ]);
