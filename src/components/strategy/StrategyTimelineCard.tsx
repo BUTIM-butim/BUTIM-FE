@@ -1,13 +1,13 @@
 type TimelineType = 'asset' | 'expense' | 'income';
 
-type TimelineItem = {
+export type TimelineItem = {
   date: string;
   label: string;
   amount: string;
   type: TimelineType;
 };
 
-const timelineItems: TimelineItem[] = [
+const defaultTimelineItems: TimelineItem[] = [
   { date: '26.04.13', label: '전체 자산', amount: '100만원', type: 'asset' },
   { date: '26.04.13', label: '병원비', amount: '-20만원', type: 'expense' },
   { date: '26.04.13', label: '보험금', amount: '+20만원', type: 'income' },
@@ -28,7 +28,13 @@ const amountClass: Record<TimelineType, string> = {
   income: 'text-text-blue',
 };
 
-export default function StrategyTimelineCard() {
+export default function StrategyTimelineCard({
+  items = defaultTimelineItems,
+}: {
+  items?: TimelineItem[];
+}) {
+  const timelineItems = items;
+
   return (
     <div className="h-[374px] w-[363px] rounded-[12px] bg-white px-[32px] py-[28px] shadow-card-blue">
       <h2 className="typo-inform-sub-section text-text-black">
