@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type {
   FinancialStep,
   FundStatusData,
@@ -7,15 +7,14 @@ import type {
   IncomeLevelEnum,
   EmploymentStatusEnum,
   HouseholdTypeEnum,
-} from '../../types/financial';
-import { financialInfoApi } from '../../apis/financialInfo';
-import Header from '../../components/layout/Header';
-import Sidebar from '../../components/layout/Sidebar';
-import FundStatusForm from '../../components/financial/FundStatusForm';
-import SupportTargetForm from '../../components/financial/SupportTargetForm';
-import Button from '../../components/common/button/Button';
+} from "../../types/financial";
+import { financialInfoApi } from "../../apis/financialInfo";
+import Sidebar from "../../components/layout/Sidebar";
+import FundStatusForm from "../../components/financial/FundStatusForm";
+import SupportTargetForm from "../../components/financial/SupportTargetForm";
+import Button from "../../components/common/button/Button";
 
-type SupportTargetStep = 'basic' | 'dependent';
+type SupportTargetStep = "basic" | "dependent";
 
 type InputProgress = {
   lastPath?: string;
@@ -25,25 +24,25 @@ type InputProgress = {
   hasFinancialInfo?: boolean;
 };
 
-const INPUT_PROGRESS_STORAGE_KEY = 'butim-input-progress';
+const INPUT_PROGRESS_STORAGE_KEY = "butim-input-progress";
 
 const initialFundStatus: FundStatusData = {
-  currentAssets: '',
-  monthlyFixedExpense: '',
-  incomeLevel: '',
-  currentEmploymentStatus: '',
+  currentAssets: "",
+  monthlyFixedExpense: "",
+  incomeLevel: "",
+  currentEmploymentStatus: "",
 };
 
 const initialSupportTarget: SupportTargetData = {
-  regionId: '',
-  regionName: '',
+  regionId: "",
+  regionName: "",
 
-  householdType: '',
+  householdType: "",
 
   hasDependent: null,
 
   hasChild: null,
-  childCount: '',
+  childCount: "",
 
   isPregnant: null,
 
@@ -53,7 +52,7 @@ const initialSupportTarget: SupportTargetData = {
 type FundStatusErrors = Partial<Record<keyof FundStatusData, boolean>>;
 type SupportTargetErrors = Partial<Record<keyof SupportTargetData, boolean>>;
 
-const removeComma = (value: string) => value.replaceAll(',', '').trim();
+const removeComma = (value: string) => value.replaceAll(",", "").trim();
 
 const getInputProgress = (): InputProgress | null => {
   const raw = localStorage.getItem(INPUT_PROGRESS_STORAGE_KEY);
@@ -82,21 +81,22 @@ const saveInputProgress = (progress: InputProgress) => {
 const getInitialFinancialStep = (): FinancialStep => {
   const progress = getInputProgress();
 
-  return progress?.financialStep ?? 'fund-status';
+  return progress?.financialStep ?? "fund-status";
 };
 
 const getInitialSupportTargetStep = (): SupportTargetStep => {
   const progress = getInputProgress();
 
-  return progress?.supportTargetStep ?? 'basic';
+  return progress?.supportTargetStep ?? "basic";
 };
 
 export default function FinancialInfoPage() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState<FinancialStep>(getInitialFinancialStep);
-  const [supportTargetStep, setSupportTargetStep] =
-    useState<SupportTargetStep>(getInitialSupportTargetStep);
+  const [supportTargetStep, setSupportTargetStep] = useState<SupportTargetStep>(
+    getInitialSupportTargetStep,
+  );
 
   const [fundStatus, setFundStatus] =
     useState<FundStatusData>(initialFundStatus);
@@ -104,8 +104,9 @@ export default function FinancialInfoPage() {
   const [supportTarget, setSupportTarget] =
     useState<SupportTargetData>(initialSupportTarget);
 
-  const [fundStatusErrors, setFundStatusErrors] =
-    useState<FundStatusErrors>({});
+  const [fundStatusErrors, setFundStatusErrors] = useState<FundStatusErrors>(
+    {},
+  );
 
   const [supportTargetErrors, setSupportTargetErrors] =
     useState<SupportTargetErrors>({});
@@ -118,7 +119,7 @@ export default function FinancialInfoPage() {
 
   useEffect(() => {
     saveInputProgress({
-      lastPath: '/financial',
+      lastPath: "/financial",
       financialStep: step,
       supportTargetStep,
       hasFinancialInfo: false,
@@ -135,22 +136,22 @@ export default function FinancialInfoPage() {
         setAccidentInfoId(data.accidentInfoId);
 
         setFundStatus({
-          currentAssets: String(data.currentAssets ?? ''),
-          monthlyFixedExpense: String(data.monthlyFixedExpense ?? ''),
-          incomeLevel: data.incomeLevel ?? '',
-          currentEmploymentStatus: data.currentEmploymentStatus ?? '',
+          currentAssets: String(data.currentAssets ?? ""),
+          monthlyFixedExpense: String(data.monthlyFixedExpense ?? ""),
+          incomeLevel: data.incomeLevel ?? "",
+          currentEmploymentStatus: data.currentEmploymentStatus ?? "",
         });
 
         setSupportTarget({
-          regionId: data.regionId != null ? String(data.regionId) : '',
-          regionName: data.regionName ?? '',
+          regionId: data.regionId != null ? String(data.regionId) : "",
+          regionName: data.regionName ?? "",
 
-          householdType: data.householdType ?? '',
+          householdType: data.householdType ?? "",
 
           hasDependent: data.hasDependent ?? null,
 
           hasChild: data.hasChild ?? null,
-          childCount: data.childCount != null ? String(data.childCount) : '',
+          childCount: data.childCount != null ? String(data.childCount) : "",
 
           isPregnant: data.isPregnant ?? null,
 
@@ -158,9 +159,9 @@ export default function FinancialInfoPage() {
         });
 
         saveInputProgress({
-          lastPath: '/financial',
-          financialStep: 'fund-status',
-          supportTargetStep: 'basic',
+          lastPath: "/financial",
+          financialStep: "fund-status",
+          supportTargetStep: "basic",
           hasFinancialInfo: true,
         });
       })
@@ -193,7 +194,6 @@ export default function FinancialInfoPage() {
       hasDisability: supportTarget.hasDisability === null,
     };
 
-
     setSupportTargetErrors(errors);
 
     return !Object.values(errors).some(Boolean);
@@ -217,27 +217,27 @@ export default function FinancialInfoPage() {
   const handlePrev = () => {
     setError(null);
 
-    if (step === 'support-target' && supportTargetStep === 'dependent') {
-      setSupportTargetStep('basic');
+    if (step === "support-target" && supportTargetStep === "dependent") {
+      setSupportTargetStep("basic");
       setSupportTargetErrors({});
 
       saveInputProgress({
-        lastPath: '/financial',
-        financialStep: 'support-target',
-        supportTargetStep: 'basic',
+        lastPath: "/financial",
+        financialStep: "support-target",
+        supportTargetStep: "basic",
       });
 
       return;
     }
 
-    if (step === 'support-target' && supportTargetStep === 'basic') {
-      setStep('fund-status');
+    if (step === "support-target" && supportTargetStep === "basic") {
+      setStep("fund-status");
       setSupportTargetErrors({});
 
       saveInputProgress({
-        lastPath: '/financial',
-        financialStep: 'fund-status',
-        supportTargetStep: 'basic',
+        lastPath: "/financial",
+        financialStep: "fund-status",
+        supportTargetStep: "basic",
       });
     }
   };
@@ -245,42 +245,42 @@ export default function FinancialInfoPage() {
   const handleNext = async () => {
     setError(null);
 
-    if (step === 'fund-status') {
+    if (step === "fund-status") {
       const isValid = validateFundStatus();
 
       if (!isValid) {
-        setError('입력하지 않은 항목을 확인해주세요.');
+        setError("입력하지 않은 항목을 확인해주세요.");
         return;
       }
 
       setFundStatusErrors({});
-      setStep('support-target');
-      setSupportTargetStep('basic');
+      setStep("support-target");
+      setSupportTargetStep("basic");
 
       saveInputProgress({
-        lastPath: '/financial',
-        financialStep: 'support-target',
-        supportTargetStep: 'basic',
+        lastPath: "/financial",
+        financialStep: "support-target",
+        supportTargetStep: "basic",
       });
 
       return;
     }
 
-    if (step === 'support-target' && supportTargetStep === 'basic') {
+    if (step === "support-target" && supportTargetStep === "basic") {
       const isValid = validateSupportTargetBasic();
 
       if (!isValid) {
-        setError('입력하지 않은 항목을 확인해주세요.');
+        setError("입력하지 않은 항목을 확인해주세요.");
         return;
       }
 
       setSupportTargetErrors({});
-      setSupportTargetStep('dependent');
+      setSupportTargetStep("dependent");
 
       saveInputProgress({
-        lastPath: '/financial',
-        financialStep: 'support-target',
-        supportTargetStep: 'dependent',
+        lastPath: "/financial",
+        financialStep: "support-target",
+        supportTargetStep: "dependent",
       });
 
       return;
@@ -289,12 +289,12 @@ export default function FinancialInfoPage() {
     const isValid = validateSupportTargetDependent();
 
     if (!isValid) {
-      setError('입력하지 않은 항목을 확인해주세요.');
+      setError("입력하지 않은 항목을 확인해주세요.");
       return;
     }
 
     if (accidentInfoId == null) {
-      setError('산재정보를 먼저 입력해주세요.');
+      setError("산재정보를 먼저 입력해주세요.");
       return;
     }
 
@@ -334,35 +334,35 @@ export default function FinancialInfoPage() {
       }
 
       saveInputProgress({
-        lastPath: '/strategy/recommend',
-        financialStep: 'support-target',
-        supportTargetStep: 'dependent',
+        lastPath: "/strategy/recommend",
+        financialStep: "support-target",
+        supportTargetStep: "dependent",
         hasFinancialInfo: true,
       });
 
       setSupportTargetErrors({});
       setError(null);
 
-      navigate('/strategy/recommend');
+      navigate("/strategy/recommend");
     } catch (e) {
-      setError(e instanceof Error ? e.message : '저장에 실패했습니다.');
+      setError(e instanceof Error ? e.message : "저장에 실패했습니다.");
     } finally {
       setSubmitting(false);
     }
   };
 
   const buttonText =
-    step === 'support-target' && supportTargetStep === 'dependent'
-      ? '완료'
-      : '다음 단계';
+    step === "support-target" && supportTargetStep === "dependent"
+      ? "완료"
+      : "다음 단계";
 
   return (
     <div className="min-h-screen bg-background-blue">
-      <Header />
-
       <Sidebar
         currentSectionId="financial"
-        currentSubSectionId={step === 'fund-status' ? 'funding' : 'supportTarget'}
+        currentSubSectionId={
+          step === "fund-status" ? "funding" : "supportTarget"
+        }
       />
 
       <main className="relative ml-[288px] min-h-screen overflow-hidden pt-[64px]">
@@ -390,7 +390,7 @@ export default function FinancialInfoPage() {
             </div>
           ) : (
             <div className="w-[800px] rounded-[12px] bg-white px-[32px] pb-[50px] pt-[40px] shadow-card-blue">
-              {step === 'fund-status' && (
+              {step === "fund-status" && (
                 <FundStatusForm
                   data={fundStatus}
                   errors={fundStatusErrors}
@@ -402,7 +402,7 @@ export default function FinancialInfoPage() {
                 />
               )}
 
-              {step === 'support-target' && (
+              {step === "support-target" && (
                 <SupportTargetForm
                   data={supportTarget}
                   step={supportTargetStep}
@@ -430,7 +430,7 @@ export default function FinancialInfoPage() {
               hasArrow
               arrowDirection="left"
               disabled={
-                (step === 'fund-status' && supportTargetStep === 'basic') ||
+                (step === "fund-status" && supportTargetStep === "basic") ||
                 submitting
               }
               onClick={handlePrev}
