@@ -5,6 +5,7 @@ import { ROUTES } from '../../constants/routes';
 import Sidebar from '../../components/layout/Sidebar';
 import CheckIcon from '../../components/common/icons/CheckIcon';
 import LogoFullLogin from '../../components/common/logo/LogoFullLogin';
+import LoadingOverlay from '../../components/common/loading/LoadingOverlay';
 
 function formatDate(isoString: string): string {
   const d = new Date(isoString);
@@ -305,9 +306,7 @@ export default function PeriodPage() {
                   입력하신 정보를 바탕으로 분석한 산재 승인 기간입니다.
                 </p>
               </div>
-              {predicting && (
-                <p className="typo-navbar-button text-title-gray">예측 중입니다...</p>
-              )}
+              {predicting && <LoadingOverlay />}
               {error && <p className="typo-warning-text text-warning-red">{error}</p>}
               {cards}
             </div>
