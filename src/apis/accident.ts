@@ -2,31 +2,32 @@ import { axiosInstance } from './axiosInstance';
 import type { Industry, Job, DiagnosisCode } from '../types/accident';
 
 type BaseResponse<T> = {
+  isSuccess: boolean;
   success: boolean;
+  code: number;
   message: string;
-  data: T;
+  result: T;
 };
 
 export const accidentApi = {
   async getIndustries(): Promise<Industry[]> {
-    const res = await axiosInstance.get<BaseResponse<{ result: Industry[] }>>(
+    const res = await axiosInstance.get<BaseResponse<Industry[]>>(
       '/api/industries',
     );
-    return res.data.data.result;
+    return res.data.result;
   },
 
   async getJobs(): Promise<Job[]> {
-    const res = await axiosInstance.get<BaseResponse<{ result: Job[] }>>(
+    const res = await axiosInstance.get<BaseResponse<Job[]>>(
       '/api/jobs',
     );
-    return res.data.data.result;
+    return res.data.result;
   },
 
   async suggestDiagnosisCodes(keyword: string): Promise<DiagnosisCode[]> {
-    const res = await axiosInstance.post<
-      BaseResponse<{ result: DiagnosisCode[] }>
-    >('/api/diagnosis-codes/suggest', { keyword });
-    return res.data.data.result;
+    const res = await axiosInstance.post<BaseResponse<DiagnosisCode[]>>(
+      '/api/diagnosis-codes/suggest', { keyword });
+    return res.data.result;
   },
 
   async submit(payload: {
@@ -40,9 +41,8 @@ export const accidentApi = {
     employmentType: string;
     additionalInfo: string;
   }): Promise<{ accidentInfoId: number }> {
-    const res = await axiosInstance.post<
-      BaseResponse<{ accidentInfoId: number }>
-    >('/api/accident-info', payload);
-    return res.data.data;
+    const res = await axiosInstance.post<BaseResponse<{ accidentInfoId: number }>>(
+      '/api/accident-info', payload);
+    return res.data.result;
   },
 };

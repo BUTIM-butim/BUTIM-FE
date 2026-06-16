@@ -11,7 +11,6 @@ import type {
 import type { SidebarSubSectionId } from '../../types/sidebar';
 import { accidentApi } from '../../apis/accident';
 import { ROUTES } from '../../constants/routes';
-import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 import Button from '../../components/common/button/Button';
 import BasicInfoForm from '../../components/accident/BasicInfoForm';
@@ -65,8 +64,8 @@ export default function AccidentInfoPage() {
   const [errors, setErrors] = useState<AccidentFormErrors>({});
 
   useEffect(() => {
-    accidentApi.getIndustries().then(setIndustries).catch(() => {});
-    accidentApi.getJobs().then(setJobs).catch(() => {});
+    accidentApi.getIndustries().then(setIndustries).catch((e) => console.error('industries error:', e));
+    accidentApi.getJobs().then(setJobs).catch((e) => console.error('jobs error:', e));
   }, []);
 
   const isFirstScreen = subStep === 'basic';
@@ -213,14 +212,12 @@ export default function AccidentInfoPage() {
 
   return (
     <div className="min-h-screen bg-background-blue">
-      <Header />
-
       <Sidebar
         currentSectionId="industrialAccident"
         currentSubSectionId={SIDEBAR_SUB_SECTION_MAP[subStep]}
       />
 
-      <main className="relative ml-[288px] min-h-screen overflow-hidden pt-[64px]">
+      <main className="relative ml-[288px] min-h-screen overflow-hidden">
         <div className="pointer-events-none absolute right-[-35px] top-[205px] opacity-[0.03]">
           <div className="bg-logo-gradient bg-clip-text text-[480px] font-bold leading-none text-transparent">
             버

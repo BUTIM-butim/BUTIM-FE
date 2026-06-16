@@ -45,6 +45,10 @@ export const router = createBrowserRouter([
         path: ROUTES.STRATEGY_RESULT,
         element: <StrategyResultPage />,
       },
+      {
+        path: ROUTES.ACCIDENT,
+        element: <AccidentInfoPage />,
+      },
     ],
   },
   {
@@ -54,9 +58,5 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.SIGNUP,
     element: <SignupPage />,
-  },
-  {
-    path: ROUTES.ACCIDENT,
-    element: <AccidentInfoPage />,
   },
 ]);

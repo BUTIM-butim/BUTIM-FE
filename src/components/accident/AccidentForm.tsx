@@ -6,8 +6,8 @@ import type {
 } from '../../types/accident';
 import InformationLongInput from '../common/input/InformationLongInput';
 import InformationLabel from '../common/input/InformationLabel';
-import InformationOptionField from '../common/option/InformationOptionField';
 import OutlineButton from '../common/button/OutlineButton';
+import CheckIcon from '../common/icons/CheckIcon';
 
 type Props = {
   data: AccidentFormData;
@@ -29,6 +29,7 @@ export default function AccidentForm({
   onConfirm,
 }: Props) {
   const [symptomFocused, setSymptomFocused] = useState(false);
+
   const diagnosisOptions = [
     ...diagnosisCodes.map((code) => ({
       label: code.name,
@@ -36,8 +37,6 @@ export default function AccidentForm({
     })),
     { label: '잘 모르겠어요', value: 'unknown' },
   ];
-
-  const selectedDiagnosisValue = data.diagnosisCodeSelection || undefined;
 
   return (
     <div className="flex w-[736px] flex-col items-center gap-[40px]">
@@ -113,50 +112,121 @@ export default function AccidentForm({
               value={data.accidentDate}
             />
 
-            <div className="flex w-[671px] flex-col gap-[14px]">
-              <label className="typo-navbar-button font-semibold text-text-black">
-                상병명
-              </label>
-              <p className="typo-navbar-button text-text-gray">
-                {data.symptomInput}
-              </p>
+            {/* 상병명 입력 (readOnly) */}
+            <div className="flex flex-col gap-[14px]">
+              <InformationLabel
+                htmlFor="symptomInputReadonly"
+                label="상병명"
+                caption="사고 유형과 다친 부위를 입력해주세요."
+              />
+              <div className="flex h-[47px] w-[671px] items-center gap-[10px]">
+                <div className="flex h-[47px] flex-1 items-center overflow-hidden rounded-[10px] border-[1.3px] border-line-gray bg-white px-[16px]">
+                  <input
+                    id="symptomInputReadonly"
+                    type="text"
+                    readOnly
+                    value={data.symptomInput}
+                    className="typo-navbar-button h-full w-full bg-transparent text-text-black outline-none"
+                  />
+                </div>
+                <div className="h-[47px] w-[91px] shrink-0">
+                  <OutlineButton
+                    size="information"
+                    fullWidth
+                    isActive={false}
+                    disabled
+                  >
+                    확인
+                  </OutlineButton>
+                </div>
+              </div>
             </div>
 
-            <div className="flex w-[671px] flex-col gap-[20px]">
-              <div className="rounded-[10px] bg-[#F5F7FA] px-[20px] py-[16px]">
-                <p className="typo-navbar-button text-text-black">
-                  <strong>입력하신 내용을</strong>{' '}
-                  이렇게 이해했어요
-                </p>
+            {/* OptionList Card */}
+            <div className="flex w-[671px] flex-col gap-[12px] rounded-[10px] bg-[#F9FAFC] p-[16px]">
+              {/* 헤더 */}
+              <div className="flex flex-col gap-[6px]">
+                <div className="flex items-center gap-[8px]">
+                  <CheckIcon variant="strategyBlue" checked className="shrink-0" />
+                  <p className="typo-popup-button text-text-black">
+                    <span className="text-[#185DC5]">입력하신 내용을</span>{' '}
+                    이렇게 이해했어요
+                  </p>
+                </div>
+                <div className="flex items-start">
+                  <div className="w-[36px] shrink-0" />
+                  <p className="typo-option-list-caption text-placeholder-gray">
+                    버팀이 예상한 상병명 리스트 중 가장 적합한 상병명을
+                    선택해주세요.
+                  </p>
+                </div>
               </div>
 
-              <div className="flex w-[671px] flex-col gap-[12px]">
-                <p className="typo-option-list-caption text-placeholder-gray">
-                  버팀이 예상한 상병명 리스트 중 가장 적합한 상병명을
-                  선택해주세요.
-                </p>
+              {/* 흰색 내부 카드 */}
+              {diagnosisCodes.length === 0 ? (
+                <div className="flex w-full flex-col items-center gap-[8px] rounded-[10px] bg-white py-[40px]">
+                  <p className="typo-navbar-button text-text-gray">
+                    검색 결과가 없습니다.
+                  </p>
+                  <p className="typo-option-list-caption text-placeholder-gray">
+                    다른 검색어를 입력해주세요.
+                  </p>
+                </div>
+              ) : (
+                <div className="w-full rounded-[10px] bg-white p-[16px] shadow-[0px_0px_20.2px_0px_rgba(30,30,30,0.02)]">
+                  <div className="flex flex-col items-center gap-[20px]">
+                    {/* 서브타이틀 */}
+                    <div className="flex w-full items-center gap-[8px]">
+                      <CheckIcon
+                        variant="strategyBlue"
+                        checked
+                        className="shrink-0"
+                      />
+                      <span className="typo-popup-button text-text-black">
+                        {data.symptomInput}
+                      </span>
+                    </div>
 
-                {diagnosisCodes.length === 0 ? (
-                  <div className="flex w-[671px] flex-col items-center gap-[8px] py-[40px]">
-                    <p className="typo-navbar-button text-text-gray">
-                      검색 결과가 없습니다.
-                    </p>
-                    <p className="typo-option-list-caption text-placeholder-gray">
-                      다른 검색어를 입력해주세요.
-                    </p>
+                    {/* 옵션 리스트 */}
+                    <div className="flex w-[535px] flex-col">
+                      {diagnosisOptions.map((option, index) => (
+                        <div key={option.value}>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              onChange({
+                                ...data,
+                                diagnosisCodeSelection: option.value,
+                              })
+                            }
+                            className="flex w-full items-center gap-[8px] py-[12px]"
+                          >
+                            <CheckIcon
+                              variant="smallBlue"
+                              checked={
+                                data.diagnosisCodeSelection === option.value
+                              }
+                              className="shrink-0"
+                            />
+                            <span
+                              className={`typo-navbar-button ${
+                                data.diagnosisCodeSelection === option.value
+                                  ? 'text-button-blue'
+                                  : 'text-[#475161]'
+                              }`}
+                            >
+                              {option.label}
+                            </span>
+                          </button>
+                          {index < diagnosisOptions.length - 1 && (
+                            <div className="h-px w-full bg-line-gray opacity-70" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ) : (
-                  <InformationOptionField
-                    label=""
-                    options={diagnosisOptions}
-                    value={selectedDiagnosisValue}
-                    error={errors.diagnosisCodeSelection}
-                    onChange={(value) =>
-                      onChange({ ...data, diagnosisCodeSelection: value })
-                    }
-                  />
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </>
         )}
