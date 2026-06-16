@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header';
+import { useLocation, useNavigate } from 'react-router-dom';
 import StrategyCashFlowGraph from '../../components/strategy/StrategyCashFlowGraph';
 import StrategySummaryCard from '../../components/strategy/StrategySummaryCard';
 import StrategyTimelineCard from '../../components/strategy/StrategyTimelineCard';
