@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../components/layout/Header';
 import Sidebar from '../../components/layout/Sidebar';
 import Button from '../../components/common/button/Button';
 import CloseIcon from '../../components/common/icons/CloseIcon';
+import { strategyApi, getStrategyContext } from '../../apis/strategy';
+import CashflowLineChart from '../../components/strategy/CashflowLineChart';
+import type {
+  StrategyCard as StrategyCardData,
+  StrategyItem as StrategyItemData,
+  StrategyType,
+  StrategyRunResponse,
+  CashflowPoint,
+} from '../../types/strategy';
 
-type StrategyId = 'strategy-1' | 'strategy-2';
+type StrategyId = StrategyType;
 
 type SupportItem = {
   title: string;
@@ -22,44 +30,34 @@ type Strategy = {
   loans?: SupportItem[];
 };
 
-const STRATEGIES: Strategy[] = [
-  {
-    id: 'strategy-1',
-    title: '전략 1',
-    description: '최대한 빠르게 받을 수 있는 전략이에요.',
-    theme: 'blue',
-    supports: [
-      {
-        title: '재난적 의료비 지원 사업',
-        period: '50~60일 지급 예상',
-        amount: '+40만원',
-      },
-      {
-        title: '긴급복지 연료비 및 전기요금',
-        period: '60~70일 지급 예상',
-        amount: '+60만원',
-      },
-    ],
-  },
-  {
-    id: 'strategy-2',
-    title: '전략 2',
-    description: '최대한 많이 받을 수 있는 전략이에요.',
-    theme: 'green',
-    supports: [
-      {
-        title: '재활근로',
-        period: '90~100일 지급 예상',
-        amount: '+80만원',
-      },
-      {
-        title: '생계급여',
-        period: '100~110일 지급 예상',
-        amount: '+40만원',
-      },
-    ],
-  },
-];
+const themeByType: Record<StrategyType, 'blue' | 'green'> = {
+  STRATEGY_1: 'blue',
+  STRATEGY_2: 'green',
+};
+
+const formatAmount = (amount: number) =>
+  `+${Math.round(amount / 10000).toLocaleString()}만원`;
+
+const formatDateRange = (item: StrategyItemData) => {
+  if (!item.expectedReceiveDate) return '지급 일정 미정';
+  const date = new Date(item.expectedReceiveDate);
+  return `${date.getMonth() + 1}월 ${date.getDate()}일경 지급 예상`;
+};
+
+const toSupportItem = (item: StrategyItemData): SupportItem => ({
+  title: item.itemName,
+  period: formatDateRange(item),
+  amount: formatAmount(item.expectedAmount),
+});
+
+const toStrategy = (card: StrategyCardData): Strategy => ({
+  id: card.strategyType,
+  title: card.title,
+  description: card.summary,
+  theme: themeByType[card.strategyType],
+  supports: card.supportItems.map(toSupportItem),
+  loans: card.loanItems.length > 0 ? card.loanItems.map(toSupportItem) : undefined,
+});
 
 const themeStyle = {
   blue: {
@@ -164,220 +162,6 @@ function WarningIcon() {
   );
 }
 
-function CashFlowChart() {
-  return (
-    <div className="relative h-[321px] w-[801px] overflow-hidden rounded-[12px] bg-white shadow-card-blue">
-      <svg
-        width="801"
-        height="321"
-        viewBox="0 0 801 321"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <linearGradient
-            id="cashGapGradient"
-            x1="488"
-            y1="188"
-            x2="466.5"
-            y2="255"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stopColor="#EF4444" />
-            <stop offset="1" stopColor="white" stopOpacity="0.7" />
-          </linearGradient>
-        </defs>
-
-        <text x="36" y="34" fill="#989EA9" fontSize="10" fontWeight="500">
-          (만원)
-        </text>
-
-        <text x="40" y="58" fill="#989EA9" fontSize="12" fontWeight="500">
-          100
-        </text>
-        <text x="47" y="109" fill="#989EA9" fontSize="12" fontWeight="500">
-          50
-        </text>
-        <text x="58" y="160" fill="#989EA9" fontSize="12" fontWeight="500">
-          0
-        </text>
-        <text x="38" y="211" fill="#989EA9" fontSize="12" fontWeight="500">
-          -50
-        </text>
-        <text x="34" y="262" fill="#989EA9" fontSize="12" fontWeight="500">
-          -100
-        </text>
-
-        <line x1="79" y1="53" x2="646" y2="53" stroke="#EBEBEB" />
-        <line x1="79" y1="103.75" x2="646" y2="103.75" stroke="#EBEBEB" />
-        <line x1="79" y1="154.5" x2="646" y2="154.5" stroke="#EBEBEB" />
-        <line x1="79" y1="205.25" x2="646" y2="205.25" stroke="#EBEBEB" />
-        <line x1="79" y1="256" x2="646" y2="256" stroke="#EBEBEB" />
-
-        <line
-          x1="591.5"
-          y1="53"
-          x2="591.5"
-          y2="256"
-          stroke="#C7CED9"
-          strokeDasharray="2 2"
-        />
-        <line
-          x1="633.5"
-          y1="53"
-          x2="633.5"
-          y2="255"
-          stroke="#C7CED9"
-          strokeDasharray="2 2"
-        />
-
-        <text x="578" y="45" fill="#2B3034" fillOpacity="0.4" fontSize="10">
-          승인 시점
-        </text>
-        <text x="620" y="45" fill="#2B3034" fillOpacity="0.4" fontSize="10">
-          지급 시점
-        </text>
-
-        <text x="80" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
-          0일
-        </text>
-        <text x="210" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
-          30일
-        </text>
-        <text x="347" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
-          60일
-        </text>
-        <text x="484" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
-          90일
-        </text>
-        <text x="580" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
-          97일
-        </text>
-        <text x="638" y="288" fill="#989EA9" fontSize="12" fontWeight="500">
-          111일
-        </text>
-        <text x="682" y="288" fill="#989EA9" fontSize="10" fontWeight="500">
-          (기준일: 26.04.13)
-        </text>
-
-        <path
-          d="M359 255V154.5L495.5 206L633.5 234V255H359Z"
-          fill="url(#cashGapGradient)"
-          opacity="0.5"
-        />
-
-        <path
-          d="M359 154.5L496 205.5L633 234"
-          stroke="#EF4444"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M88 53L222 104L359 154.5"
-          stroke="#C7CED9"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M88.5 53L222.5 104L329 111.5L359 118.5L380 62L499 104L633.5 142"
-          stroke="#185DC5"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <path
-          d="M88.5 53L222.5 104L359.5 154.5L496.5 205.5L530 135.5L598.5 113L633.5 129"
-          stroke="#149F70"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        <line
-          x1="359.75"
-          y1="157"
-          x2="359.75"
-          y2="256"
-          stroke="#EF4444"
-          strokeWidth="1.5"
-          strokeDasharray="3 3"
-        />
-
-        {[
-          [88, 53],
-          [222, 103],
-        ].map(([cx, cy]) => (
-          <g key={`gray-${cx}-${cy}`}>
-            <circle cx={cx} cy={cy} r="5" fill="#C7CED9" />
-            <circle cx={cx} cy={cy} r="2.5" fill="white" />
-          </g>
-        ))}
-
-        {[
-          [359.5, 154],
-          [496, 205],
-          [633, 234],
-        ].map(([cx, cy]) => (
-          <g key={`red-${cx}-${cy}`}>
-            <circle cx={cx} cy={cy} r="5" fill="#EF4444" />
-            <circle cx={cx} cy={cy} r="2.5" fill="white" />
-          </g>
-        ))}
-
-        {[
-          [88, 53],
-          [222, 103],
-          [329, 112],
-          [359, 118],
-          [380, 62],
-          [499, 104],
-          [633, 142],
-        ].map(([cx, cy]) => (
-          <g key={`blue-${cx}-${cy}`}>
-            <circle cx={cx} cy={cy} r="5" fill="#3778E3" />
-            <circle cx={cx} cy={cy} r="2.5" fill="white" />
-          </g>
-        ))}
-
-        {[
-          [88, 53],
-          [222, 103],
-          [359.5, 154],
-          [496, 205],
-          [530, 136],
-          [598, 114],
-          [634, 129],
-        ].map(([cx, cy]) => (
-          <g key={`green-${cx}-${cy}`}>
-            <circle cx={cx} cy={cy} r="5" fill="#1BAB8B" />
-            <circle cx={cx} cy={cy} r="2.5" fill="white" />
-          </g>
-        ))}
-
-        <g>
-          <circle cx="687.7" cy="59" r="5.35" stroke="#EF4444" />
-          <circle cx="687.7" cy="59" r="4" fill="#EF4444" />
-          <text x="706" y="63" fill="#EF4444" fontSize="12" fontWeight="500">
-            현금 공백
-          </text>
-
-          <circle cx="687.7" cy="81" r="5.35" stroke="#3778E3" />
-          <circle cx="687.7" cy="81" r="4" fill="#3778E3" />
-          <text x="706" y="85" fill="#3778E3" fontSize="12" fontWeight="500">
-            전략 1
-          </text>
-
-          <circle cx="687.7" cy="103" r="5.35" stroke="#1BAB8B" />
-          <circle cx="687.7" cy="103" r="4" fill="#1BAB8B" />
-          <text x="706" y="107" fill="#1BAB8B" fontSize="12" fontWeight="500">
-            전략 2
-          </text>
-        </g>
-      </svg>
-    </div>
-  );
-}
 
 function InfoBox({
   title,
@@ -549,23 +333,81 @@ function StrategyCompleteModal({
 export default function StrategyRecommendationPage() {
   const navigate = useNavigate();
 
+  const [strategies, setStrategies] = useState<Strategy[]>([]);
+  const [cashflow, setCashflow] = useState<CashflowPoint[]>([]);
+  const [runSummary, setRunSummary] = useState<{
+    cashGapDay: number;
+    approvalExpectedDays: number;
+    paymentExpectedDays: number;
+  } | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   const [selectedStrategyId, setSelectedStrategyId] =
     useState<StrategyId | null>(null);
   const [showError, setShowError] = useState(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+
+  useEffect(() => {
+    const context = getStrategyContext();
+
+    if (!context) {
+      setLoadError('산재정보와 재정정보를 먼저 입력해주세요.');
+      setLoading(false);
+      return;
+    }
+
+    setUserId(context.userId);
+
+    strategyApi
+      .run(context)
+      .then((data: StrategyRunResponse) => {
+        setStrategies(data.strategies.map(toStrategy));
+        setCashflow(data.cashflow);
+        setRunSummary({
+          cashGapDay: data.cashGapDay,
+          approvalExpectedDays: data.approvalExpectedDays,
+          paymentExpectedDays: data.paymentExpectedDays,
+        });
+      })
+      .catch(() => {
+        setLoadError('전략 추천 정보를 불러오지 못했습니다.');
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleSelectStrategy = (strategyId: StrategyId) => {
     setSelectedStrategyId(strategyId);
     setShowError(false);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedStrategyId) {
       setShowError(true);
       return;
     }
 
-    setIsCompleteModalOpen(true);
+    if (!userId) {
+      setLoadError('사용자 정보를 확인할 수 없습니다.');
+      return;
+    }
+
+    setConfirming(true);
+
+    try {
+      await strategyApi.confirm({
+        userId,
+        selectedStrategyType: selectedStrategyId,
+      });
+
+      setIsCompleteModalOpen(true);
+    } catch {
+      setLoadError('전략 확정에 실패했습니다.');
+    } finally {
+      setConfirming(false);
+    }
   };
 
   const handleMove = () => {
@@ -586,8 +428,6 @@ export default function StrategyRecommendationPage() {
 
   return (
     <div className="min-h-screen bg-background-blue">
-      <Header />
-
       <Sidebar currentSectionId="strategy" />
 
       <main className="relative ml-[288px] min-h-screen overflow-hidden pt-[64px]">
@@ -614,52 +454,66 @@ export default function StrategyRecommendationPage() {
             </p>
           </div>
 
-          <div className="flex w-[801px] flex-col gap-[15px]">
-            <CashFlowChart />
-
-            <div className="flex w-[801px] justify-between gap-[15px]">
-              {STRATEGIES.map((strategy) => (
-                <StrategyCard
-                  key={strategy.id}
-                  strategy={strategy}
-                  selected={selectedStrategyId === strategy.id}
-                  showError={showError}
-                  onClick={() => handleSelectStrategy(strategy.id)}
-                />
-              ))}
+          {loading ? (
+            <div className="flex h-[300px] w-[801px] items-center justify-center rounded-[12px] bg-white shadow-card-blue">
+              <span className="typo-navbar-button text-text-gray">
+                전략을 분석하는 중...
+              </span>
             </div>
+          ) : (
+            <div className="flex w-[801px] flex-col gap-[15px]">
+              <CashflowLineChart
+                points={cashflow}
+                cashGapDay={runSummary?.cashGapDay}
+                approvalExpectedDays={runSummary?.approvalExpectedDays}
+                paymentExpectedDays={runSummary?.paymentExpectedDays}
+              />
 
-            {showError && (
-              <div className="flex items-center gap-[4px]">
-                <WarningIcon />
-                <p className="typo-warning-text text-warning-red">
-                  전략을 선택해주세요.
-                </p>
+              <div className="flex w-[801px] justify-between gap-[15px]">
+                {strategies.map((strategy) => (
+                  <StrategyCard
+                    key={strategy.id}
+                    strategy={strategy}
+                    selected={selectedStrategyId === strategy.id}
+                    showError={showError}
+                    onClick={() => handleSelectStrategy(strategy.id)}
+                  />
+                ))}
               </div>
-            )}
 
-            <div className="mt-[41px] flex w-[801px] justify-between">
-              <Button
-                variant="gray"
-                size="information"
-                hasArrow
-                arrowDirection="left"
-                onClick={() => navigate('/financial')}
-              >
-                이전 단계
-              </Button>
+              {(showError || loadError) && (
+                <div className="flex items-center gap-[4px]">
+                  <WarningIcon />
+                  <p className="typo-warning-text text-warning-red">
+                    {loadError ?? '전략을 선택해주세요.'}
+                  </p>
+                </div>
+              )}
 
-              <Button
-                variant="blue"
-                size="information"
-                hasArrow
-                arrowDirection="right"
-                onClick={handleConfirm}
-              >
-                전략 확정하기
-              </Button>
+              <div className="mt-[41px] flex w-[801px] justify-between">
+                <Button
+                  variant="gray"
+                  size="information"
+                  hasArrow
+                  arrowDirection="left"
+                  onClick={() => navigate('/financial')}
+                >
+                  이전 단계
+                </Button>
+
+                <Button
+                  variant="blue"
+                  size="information"
+                  hasArrow
+                  arrowDirection="right"
+                  disabled={confirming}
+                  onClick={handleConfirm}
+                >
+                  전략 확정하기
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </section>
       </main>
 

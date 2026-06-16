@@ -8,9 +8,10 @@ import PreviewCard from "../components/main/PreviewCard";
 import heroBackground from "../assets/images/hero-background.svg";
 import symbolGraphic from "../assets/images/symbol-graphic.svg";
 
+import { getMainResult } from "../apis/main";
 import { ROUTES } from "../constants/routes";
 
-import type { PreviewCardStatus } from "../types/main";
+import type { MainResult, PreviewCardStatus } from "../types/main";
 
 type InputProgress = {
   lastPath?: string;
@@ -43,6 +44,8 @@ const MainPage = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(
     () => Boolean((location.state as { showLoginModal?: boolean } | null)?.showLoginModal),
   );
+    
+  const [mainResult, setMainResult] = useState<MainResult | null>(null); 
 
   useEffect(() => {
     if ((location.state as { showLoginModal?: boolean } | null)?.showLoginModal) {
@@ -50,16 +53,49 @@ const MainPage = () => {
     }
   }, []);
 
-  /*
-   * 로그인 여부는 accessToken 존재 여부로 판단합니다.
-   *
-   * 승인 기간 결과 및 전략 결과는
-   * 관련 API 연결 전까지 테스트용 값으로 사용합니다.
-   */
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
-  const hasApprovalResult = false;
-  const hasStrategyResult = false;
+  useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const fetchMainResult = async () => {
+      try {
+        const result = await getMainResult();
+
+        if (isMounted) {
+          setMainResult(result);
+        }
+      } catch (error) {
+        console.error("메인 페이지 결과 조회에 실패했습니다.", error);
+
+        if (isMounted) {
+          setMainResult(null);
+        }
+      }
+    };
+
+    void fetchMainResult();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isLoggedIn]);
+
+  const hasApprovalResult =
+    mainResult !== null &&
+    mainResult.predictionMinDays > 0 &&
+    mainResult.predictionMaxDays > 0 &&
+    mainResult.predictionMedianDays > 0 &&
+    mainResult.actualExpectedDays > 0;
+
+  const hasStrategyResult =
+    mainResult !== null &&
+    mainResult.paymentExpectedDays > 0 &&
+    (mainResult.hasSupportItems || mainResult.hasLoanItems);
 
   const approvalCardStatus: PreviewCardStatus = hasApprovalResult
     ? "completed"
@@ -89,24 +125,18 @@ const MainPage = () => {
   };
 
   const handleStartClick = () => {
-    // 1. 로그인하지 않은 상태
     if (!isLoggedIn) {
       setIsLoginModalOpen(true);
       return;
     }
 
-    // 2. 로그인했지만 승인 기간 결과가 없는 상태
-    // 산재 정보 입력 화면으로 이동
     if (!hasApprovalResult) {
       navigate(ROUTES.ACCIDENT);
       return;
     }
 
-    // 3. 승인 기간 결과는 있지만 전략 결과가 없는 상태
-    // 재정 정보 입력 첫 단계로 이동
     if (!hasStrategyResult) {
       moveToFinancialFirstStep();
-      return;
     }
   };
 
@@ -121,7 +151,6 @@ const MainPage = () => {
   return (
     <>
       <main className="relative min-h-[calc(100vh-68px)] overflow-hidden bg-background-blue">
-        {/* 상단 배경 이미지 */}
         <div className="pointer-events-none absolute left-0 top-[-147px] h-[542px] w-full">
           <img
             src={heroBackground}
@@ -131,7 +160,6 @@ const MainPage = () => {
           />
         </div>
 
-        {/* 버팀 심볼 그래픽 */}
         <div className="pointer-events-none absolute right-[165.49px] top-[81px]">
           <div className="-rotate-[11.3deg]">
             <img
@@ -143,7 +171,6 @@ const MainPage = () => {
           </div>
         </div>
 
-        {/* 메인 콘텐츠 */}
         <div className="relative z-10 mx-auto w-full max-w-[1512px] px-[120px] pb-[56px] pt-[80px]">
           <section className="flex w-fit flex-col items-start gap-[36px]">
             <h1 className="typo-hero-title whitespace-nowrap text-text-black">
@@ -157,7 +184,6 @@ const MainPage = () => {
               <p>그 기간 동안 버틸 수 있는 지원 전략을 추천해드립니다.</p>
             </div>
 
-            {/* 버튼이 사라져도 카드 위치가 유지되도록 높이 고정 */}
             <div className="h-[54px]">
               {!hasAllResults && (
                 <Button
@@ -173,24 +199,29 @@ const MainPage = () => {
             </div>
           </section>
 
-          {/* 하단 결과 카드 */}
           <div className="mt-[68px] flex w-full gap-[60px]">
             <PreviewCard
               tone="blue"
               status={approvalCardStatus}
+              predictionMinDays={mainResult?.predictionMinDays}
+              predictionMaxDays={mainResult?.predictionMaxDays}
+              predictionMedianDays={mainResult?.predictionMedianDays}
+              actualExpectedDays={mainResult?.actualExpectedDays}
               onAction={handleApprovalResultClick}
             />
 
             <PreviewCard
               tone="green"
               status={strategyCardStatus}
+              paymentExpectedDays={mainResult?.paymentExpectedDays}
+              hasSupportItems={mainResult?.hasSupportItems}
+              hasLoanItems={mainResult?.hasLoanItems}
               onAction={handleStrategyResultClick}
             />
           </div>
         </div>
       </main>
 
-      {/* 비로그인 사용자 안내 모달 */}
       {isLoginModalOpen && (
         <LoginRequiredModal onClose={() => setIsLoginModalOpen(false)} />
       )}

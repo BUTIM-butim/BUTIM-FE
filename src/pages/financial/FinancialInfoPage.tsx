@@ -9,6 +9,8 @@ import type {
   HouseholdTypeEnum,
 } from "../../types/financial";
 import { financialInfoApi } from "../../apis/financialInfo";
+import { accidentApi } from "../../apis/accident";
+import { getErrorMessage } from "../../apis/axiosInstance";
 import Sidebar from "../../components/layout/Sidebar";
 import FundStatusForm from "../../components/financial/FundStatusForm";
 import SupportTargetForm from "../../components/financial/SupportTargetForm";
@@ -78,25 +80,12 @@ const saveInputProgress = (progress: InputProgress) => {
   );
 };
 
-const getInitialFinancialStep = (): FinancialStep => {
-  const progress = getInputProgress();
-
-  return progress?.financialStep ?? "fund-status";
-};
-
-const getInitialSupportTargetStep = (): SupportTargetStep => {
-  const progress = getInputProgress();
-
-  return progress?.supportTargetStep ?? "basic";
-};
-
 export default function FinancialInfoPage() {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState<FinancialStep>(getInitialFinancialStep);
-  const [supportTargetStep, setSupportTargetStep] = useState<SupportTargetStep>(
-    getInitialSupportTargetStep,
-  );
+  const [step, setStep] = useState<FinancialStep>("fund-status");
+  const [supportTargetStep, setSupportTargetStep] =
+    useState<SupportTargetStep>("basic");
 
   const [fundStatus, setFundStatus] =
     useState<FundStatusData>(initialFundStatus);
@@ -130,7 +119,12 @@ export default function FinancialInfoPage() {
     financialInfoApi
       .get()
       .then((data) => {
-        if (!data) return;
+        if (!data) {
+          accidentApi.getMe().then((accidentInfo) => {
+            if (accidentInfo) setAccidentInfoId(accidentInfo.id);
+          });
+          return;
+        }
 
         setHasExisting(true);
         setAccidentInfoId(data.accidentInfoId);
@@ -326,12 +320,20 @@ export default function FinancialInfoPage() {
     };
 
     try {
-      if (hasExisting) {
-        await financialInfoApi.update(payload);
-      } else {
-        await financialInfoApi.save(payload);
-        setHasExisting(true);
-      }
+      const result = hasExisting
+        ? await financialInfoApi.update(payload)
+        : await financialInfoApi.save(payload);
+
+      setHasExisting(true);
+
+      localStorage.setItem(
+        "butim-strategy-context",
+        JSON.stringify({
+          userId: result.userId,
+          accidentInfoId: result.accidentInfoId,
+          financialInfoId: result.id,
+        }),
+      );
 
       saveInputProgress({
         lastPath: "/strategy/recommend",
@@ -345,7 +347,7 @@ export default function FinancialInfoPage() {
 
       navigate("/strategy/recommend");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "저장에 실패했습니다.");
+      setError(getErrorMessage(e, "저장에 실패했습니다."));
     } finally {
       setSubmitting(false);
     }

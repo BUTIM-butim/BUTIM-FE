@@ -1,12 +1,22 @@
-import { useEffect, useMemo } from 'react';
-import Header from '../../components/layout/Header';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import StrategyCashFlowGraph from '../../components/strategy/StrategyCashFlowGraph';
+import CashflowLineChart from '../../components/strategy/CashflowLineChart';
 import StrategySummaryCard from '../../components/strategy/StrategySummaryCard';
 import StrategyTimelineCard from '../../components/strategy/StrategyTimelineCard';
+import type { TimelineItem as TimelineCardItem } from '../../components/strategy/StrategyTimelineCard';
 import StrategyApplyCard from '../../components/strategy/StrategyApplyCard';
+import type {
+  ApplyOption,
+  RecalculatePayload,
+} from '../../components/strategy/StrategyApplyCard';
 import Button from '../../components/common/button/Button';
 import LogoFullLogin from '../../components/common/logo/LogoFullLogin';
+import { strategyApi, getStrategyContext } from '../../apis/strategy';
+import { getErrorMessage } from '../../apis/axiosInstance';
+import type {
+  StrategyMeResponse,
+  StrategyItem as StrategyItemData,
+} from '../../types/strategy';
 
 type LocationState = {
   hasStrategyResult?: boolean;
@@ -31,20 +41,43 @@ const HAS_STRATEGY_RESULT_STORAGE_KEY = 'butim-has-strategy-result';
 
 const DEFAULT_INPUT_PATH = '/accident';
 
-const selectedStrategySupports: SupportItem[] = [
-  {
-    title: '재난적 의료비 지원 사업',
-    period: '50~60일 지급 예상',
-    applyPeriod: '신청일: 26.05.02~05.07',
-    amount: '+40만원',
-  },
-  {
-    title: '긴급복지 연료비 및 전기요금',
-    period: '60~70일 지급 예상',
-    applyPeriod: '신청일: 26.05.17~05.19',
-    amount: '+60만원',
-  },
-];
+const formatDate = (value: string | null) => {
+  if (!value) return '미정';
+  const date = new Date(value);
+  return `${String(date.getFullYear()).slice(2)}.${String(
+    date.getMonth() + 1,
+  ).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+};
+
+const toSupportItem = (item: StrategyItemData): SupportItem => ({
+  title: item.itemName,
+  period: `${formatDate(item.expectedReceiveDate)} 지급 예상`,
+  applyPeriod: `신청일: ${formatDate(item.expectedApplyDate)}`,
+  amount: `+${Math.round(item.expectedAmount / 10000).toLocaleString()}만원`,
+});
+
+const timelineTypeByEvent: Record<string, TimelineCardItem['type']> = {
+  CURRENT_ASSET: 'asset',
+  HOSPITAL_COST: 'expense',
+  WELFARE_RECEIVED: 'income',
+  LOAN_RECEIVED: 'income',
+  INSURANCE_RECEIVED: 'income',
+  WORKERS_COMPENSATION_RECEIVED: 'income',
+};
+
+const toTimelineCardItem = (
+  item: StrategyMeResponse['timeline'][number],
+): TimelineCardItem => ({
+  date: formatDate(item.date),
+  label: item.eventName,
+  amount: `${item.amount >= 0 ? '+' : ''}${Math.round(
+    item.amount / 10000,
+  ).toLocaleString()}만원`,
+  type: timelineTypeByEvent[item.eventType] ?? 'asset',
+});
+
+const formatWon = (amount: number) =>
+  `${Math.round(amount / 10000).toLocaleString()}만원`;
 
 const getInputProgress = (): InputProgress | null => {
   const raw = localStorage.getItem(INPUT_PROGRESS_STORAGE_KEY);
@@ -72,7 +105,13 @@ const getNextInputPath = () => {
   return DEFAULT_INPUT_PATH;
 };
 
-function SelectedStrategyCard() {
+function SelectedStrategyCard({
+  description,
+  supports,
+}: {
+  description: string;
+  supports: SupportItem[];
+}) {
   return (
     <div className="w-[801px] rounded-[12px] bg-white px-[32px] py-[28px] shadow-card-blue">
       <h2 className="typo-inform-sub-section text-text-black">맞춤 전략</h2>
@@ -81,20 +120,18 @@ function SelectedStrategyCard() {
 
       <div className="mt-[20px] flex h-[59px] items-center rounded-[12px] bg-background-blue px-[30px]">
         <span className="mr-[10px] text-text-blue">✓</span>
-        <p className="typo-navbar-button text-title-gray">
-          최대한 빠르게 받을 수 있는 전략이에요.
-        </p>
+        <p className="typo-navbar-button text-title-gray">{description}</p>
       </div>
 
       <div className="mt-[32px] rounded-[10px] bg-white">
         <h3 className="typo-popup-button text-text-black">지원금</h3>
 
         <div className="mt-[18px] flex flex-col">
-          {selectedStrategySupports.map((item, index) => (
+          {supports.map((item, index) => (
             <div
               key={item.title}
               className={`flex justify-between py-[14px] ${
-                index !== selectedStrategySupports.length - 1
+                index !== supports.length - 1
                   ? 'border-b border-line-gray'
                   : ''
               }`}
@@ -168,8 +205,6 @@ function NeedInfoCard() {
 function NeedInfoPage() {
   return (
     <div className="min-h-screen bg-background-blue">
-      <Header />
-
       <main className="relative min-h-screen overflow-hidden pt-[64px]">
         <div className="pointer-events-none absolute left-0 right-0 top-[64px] h-[542px] opacity-70">
           <div className="absolute left-0 top-[-147px] h-[437px] w-full bg-[#E9EFFD] blur-[2px]" />
@@ -192,6 +227,14 @@ export default function StrategyResultPage() {
 
   const state = location.state as LocationState | null;
 
+  const [result, setResult] = useState<StrategyMeResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [recalculating, setRecalculating] = useState(false);
+  const [recalculateError, setRecalculateError] = useState<string | null>(
+    null,
+  );
+
   const hasStrategyResult = useMemo(() => {
     const selectedStrategyId = localStorage.getItem(
       SELECTED_STRATEGY_STORAGE_KEY,
@@ -213,14 +256,85 @@ export default function StrategyResultPage() {
     }
   }, [state]);
 
+  useEffect(() => {
+    if (!hasStrategyResult) {
+      setLoading(false);
+      return;
+    }
+
+    const context = getStrategyContext();
+
+    if (!context) {
+      setLoading(false);
+      return;
+    }
+
+    setUserId(context.userId);
+
+    strategyApi
+      .getMe(context.userId)
+      .then(setResult)
+      .catch(() => setResult(null))
+      .finally(() => setLoading(false));
+  }, [hasStrategyResult]);
+
   if (!hasStrategyResult) {
     return <NeedInfoPage />;
   }
 
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background-blue">
+        <span className="typo-navbar-button text-text-gray">
+          불러오는 중...
+        </span>
+      </div>
+    );
+  }
+
+  const selectedStrategy = result?.selectedStrategy ?? null;
+
+  const applyOptions: ApplyOption[] = selectedStrategy
+    ? [...selectedStrategy.supportItems, ...selectedStrategy.loanItems].map(
+        (item) => ({ itemId: item.itemId, label: item.itemName }),
+      )
+    : [];
+
+  const handleRecalculate = async (payload: RecalculatePayload) => {
+    if (!userId) {
+      setRecalculateError('사용자 정보를 확인할 수 없습니다.');
+      return;
+    }
+
+    setRecalculating(true);
+    setRecalculateError(null);
+
+    try {
+      const cashflow = await strategyApi.recalculateCashflow({
+        userId,
+        ...payload,
+      });
+
+      setResult((prev) =>
+        prev
+          ? {
+              ...prev,
+              currentAsset: cashflow.currentAsset,
+              cashGapDay: cashflow.cashGapDay,
+              cashflow: cashflow.cashflow,
+              timeline: cashflow.timeline,
+            }
+          : prev,
+      );
+    } catch (e) {
+      setRecalculateError(getErrorMessage(e, '전략 재계산에 실패했습니다.'));
+    } finally {
+      setRecalculating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background-blue">
-      <Header />
-
       <main className="relative min-h-screen overflow-hidden pt-[64px]">
         <div className="pointer-events-none absolute right-[-35px] top-[205px] opacity-[0.03]">
           <div className="bg-logo-gradient bg-clip-text text-[480px] font-bold leading-none text-transparent">
@@ -246,21 +360,53 @@ export default function StrategyResultPage() {
           </div>
 
           <div className="mt-[56px] grid grid-cols-[801px_363px] gap-x-[16px] gap-y-[16px]">
-            <StrategyCashFlowGraph variant="result" />
+            <CashflowLineChart
+              points={result?.cashflow ?? []}
+              cashGapDay={result?.cashGapDay}
+              approvalExpectedDays={result?.approvalExpectedDays}
+              paymentExpectedDays={result?.paymentExpectedDays}
+            />
 
             <div className="grid h-[254px] grid-cols-2 gap-[16px]">
-              <StrategySummaryCard title="현재 자산" value="100만원" />
-              <StrategySummaryCard title="예상 승인 기간" value="D-97" />
-              <StrategySummaryCard title="현금 공백 발생" value="D-60" />
-              <StrategySummaryCard title="예상 지급 기간" value="D-111" />
+              <StrategySummaryCard
+                title="현재 자산"
+                value={result ? formatWon(result.currentAsset) : '-'}
+              />
+              <StrategySummaryCard
+                title="예상 승인 기간"
+                value={result ? `D-${result.approvalExpectedDays}` : '-'}
+              />
+              <StrategySummaryCard
+                title="현금 공백 발생"
+                value={result ? `D-${result.cashGapDay}` : '-'}
+              />
+              <StrategySummaryCard
+                title="예상 지급 기간"
+                value={result ? `D-${result.paymentExpectedDays}` : '-'}
+              />
             </div>
 
             <div className="flex flex-col gap-[16px]">
-              <SelectedStrategyCard />
-              <StrategyApplyCard />
+              <SelectedStrategyCard
+                description={selectedStrategy?.summary ?? '전략 정보를 확인할 수 없습니다.'}
+                supports={
+                  selectedStrategy
+                    ? selectedStrategy.supportItems.map(toSupportItem)
+                    : []
+                }
+              />
+              <StrategyApplyCard
+                options={applyOptions}
+                strategyTitle={selectedStrategy?.title ?? '선택한 전략'}
+                submitting={recalculating}
+                submitError={recalculateError}
+                onSubmit={handleRecalculate}
+              />
             </div>
 
-            <StrategyTimelineCard />
+            <StrategyTimelineCard
+              items={result?.timeline.map(toTimelineCardItem)}
+            />
           </div>
 
           <div className="mt-[56px] flex w-[801px] justify-between">

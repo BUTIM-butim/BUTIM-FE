@@ -22,6 +22,24 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 let refreshPromise: Promise<TokenResponse> | null = null;
 
+export const getErrorMessage = (e: unknown, fallback: string): string => {
+  if (
+    e &&
+    typeof e === "object" &&
+    "response" in e &&
+    e.response &&
+    typeof e.response === "object" &&
+    "data" in e.response
+  ) {
+    const data = (e.response as { data?: BaseResponse<unknown> }).data;
+    if (data?.message) return data.message;
+  }
+
+  if (e instanceof Error) return e.message;
+
+  return fallback;
+};
+
 const unwrapBaseResponse = <T>(response: BaseResponse<T> | T): T => {
   if (
     response &&

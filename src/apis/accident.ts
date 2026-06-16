@@ -10,6 +10,17 @@ type BaseResponse<T> = {
 };
 
 export const accidentApi = {
+  async getMe(): Promise<{ id: number } | null> {
+    try {
+      const res = await axiosInstance.get<BaseResponse<{ id: number }>>(
+        '/api/accident-info/me',
+      );
+      return res.data.result;
+    } catch {
+      return null;
+    }
+  },
+
   async getIndustries(): Promise<Industry[]> {
     const res = await axiosInstance.get<BaseResponse<Industry[]>>(
       '/api/industries',
