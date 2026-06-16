@@ -1,22 +1,51 @@
-import { Navigate, createBrowserRouter } from 'react-router-dom';
-import { ROUTES } from '../constants/routes';
+import { Navigate, createBrowserRouter } from "react-router-dom";
 
-import MainPage from '../pages/MainPage';
-import LoginPage from '../pages/auth/LoginPage';
-import SignupPage from '../pages/auth/SignupPage';
-import ButtonTestPage from '../pages/dev/ButtonTestPage';
-import ModalTestPage from '../pages/dev/ModalTestPage';
-import UserEditPage from '../pages/user/UserEditPage';
-import AccidentInfoPage from '../pages/accident/AccidentInfoPage';
-import FinancialInfoPage from '../pages/financial/FinancialInfoPage';
-import FinancialSupportInfoPage from '../pages/financial/FinancialSupportInfoPage';
-import StrategyRecommendationPage from '../pages/strategy/StrategyRecommendationPage';
-import StrategyResultPage from '../pages/strategy/StrategyResultPage';
+import { ROUTES } from "../constants/routes";
+import MainLayout from "../layouts/MainLayout";
+
+import MainPage from "../pages/MainPage";
+import LoginPage from "../pages/auth/LoginPage";
+import SignupPage from "../pages/auth/SignupPage";
+import AccidentInfoPage from "../pages/accident/AccidentInfoPage";
+import FinancialInfoPage from "../pages/financial/FinancialInfoPage";
+import FinancialSupportInfoPage from "../pages/financial/FinancialSupportInfoPage";
+import StrategyRecommendationPage from "../pages/strategy/StrategyRecommendationPage";
+import StrategyResultPage from "../pages/strategy/StrategyResultPage";
+import UserEditPage from "../pages/user/UserEditPage";
 
 export const router = createBrowserRouter([
   {
-    path: ROUTES.MAIN,
-    element: <MainPage />,
+    element: <MainLayout />,
+    children: [
+      {
+        path: ROUTES.MAIN,
+        element: <MainPage />,
+      },
+      {
+        path: ROUTES.USER_EDIT,
+        element: <UserEditPage />,
+      },
+      {
+        path: ROUTES.FINANCIAL_INFO,
+        element: <FinancialInfoPage />,
+      },
+      {
+        path: ROUTES.FINANCIAL_SUPPORT_INFO,
+        element: <FinancialSupportInfoPage />,
+      },
+      {
+        path: ROUTES.STRATEGY,
+        element: <Navigate to={ROUTES.STRATEGY_RESULT} replace />,
+      },
+      {
+        path: ROUTES.STRATEGY_RECOMMEND,
+        element: <StrategyRecommendationPage />,
+      },
+      {
+        path: ROUTES.STRATEGY_RESULT,
+        element: <StrategyResultPage />,
+      },
+    ],
   },
   {
     path: ROUTES.LOGIN,
@@ -27,39 +56,7 @@ export const router = createBrowserRouter([
     element: <SignupPage />,
   },
   {
-    path: ROUTES.BUTTON_TEST,
-    element: <ButtonTestPage />,
-  },
-  {
-    path: ROUTES.MODAL_TEST,
-    element: <ModalTestPage />,
-  },
-  {
-    path: ROUTES.USER_EDIT,
-    element: <UserEditPage />,
-  },
-  {
     path: ROUTES.ACCIDENT,
     element: <AccidentInfoPage />,
-  },
-  {
-    path: ROUTES.FINANCIAL_INFO,
-    element: <FinancialInfoPage />,
-  },
-  {
-    path: ROUTES.FINANCIAL_SUPPORT_INFO,
-    element: <FinancialSupportInfoPage />,
-  },
-  {
-    path: ROUTES.STRATEGY,
-    element: <Navigate to={ROUTES.STRATEGY_RESULT} replace />,
-  },
-  {
-    path: ROUTES.STRATEGY_RECOMMEND,
-    element: <StrategyRecommendationPage />,
-  },
-  {
-    path: ROUTES.STRATEGY_RESULT,
-    element: <StrategyResultPage />,
   },
 ]);

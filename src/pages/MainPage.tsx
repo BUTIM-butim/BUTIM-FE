@@ -1,28 +1,33 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-import Header from '../components/layout/Header';
-import GoIcon from '../components/common/icons/GoIcon';
-import { ROUTES } from '../constants/routes';
-import type { PreviewCardTone } from '../types/main';
-import heroBackground from '../assets/images/hero-background.svg';
-import symbolGraphic from '../assets/images/symbol-graphic.svg';
-import calendarIcon from '../assets/images/icon-calendar.svg';
-import supportIcon from '../assets/images/icon-support.svg';
-import lockIcon from '../assets/images/icon-lock.svg';
-import cardBlueGraphic from '../assets/images/card-blue-graphic.svg';
-import cardGreenGraphic from '../assets/images/card-green-graphic.svg';
+import GoIcon from "../components/common/icons/GoIcon";
+import { ROUTES } from "../constants/routes";
+import type { PreviewCardTone } from "../types/main";
+import heroBackground from "../assets/images/hero-background.svg";
+import symbolGraphic from "../assets/images/symbol-graphic.svg";
+import calendarIcon from "../assets/images/icon-calendar.svg";
+import supportIcon from "../assets/images/icon-support.svg";
+import lockIcon from "../assets/images/icon-lock.svg";
+import cardBlueGraphic from "../assets/images/card-blue-graphic.svg";
+import cardGreenGraphic from "../assets/images/card-green-graphic.svg";
 
 type PreviewCardProps = {
   tone: PreviewCardTone;
 };
 
 const CardTitleIcon = ({ tone }: PreviewCardProps) => {
-  const isBlue = tone === 'blue';
+  const isBlue = tone === "blue";
 
   return (
     <span className="relative size-[33px] shrink-0">
-      <span className={`absolute ${isBlue ? 'inset-[8.33%_12.5%]' : 'inset-[16.67%_8.33%]'}`}>
-        <img src={isBlue ? calendarIcon : supportIcon} alt="" className="size-full" />
+      <span
+        className={`absolute ${isBlue ? "inset-[8.33%_12.5%]" : "inset-[16.67%_8.33%]"}`}
+      >
+        <img
+          src={isBlue ? calendarIcon : supportIcon}
+          alt=""
+          className="size-full"
+        />
       </span>
     </span>
   );
@@ -37,7 +42,7 @@ const LockIcon = () => (
 );
 
 const PreviewCard = ({ tone }: PreviewCardProps) => {
-  const isBlue = tone === 'blue';
+  const isBlue = tone === "blue";
 
   return (
     <section className="relative h-[322px] w-[606px] overflow-hidden rounded-2xl bg-white shadow-card-blue">
@@ -46,13 +51,17 @@ const PreviewCard = ({ tone }: PreviewCardProps) => {
         <h2 className="typo-card-title text-text-black">
           {isBlue ? (
             <>
-              <span className="font-bold text-button-blue">승인까지 얼마나</span>
+              <span className="font-bold text-button-blue">
+                승인까지 얼마나
+              </span>
               <span> 걸릴까요?</span>
             </>
           ) : (
             <>
               <span>그 기간 동안, </span>
-              <span className="font-bold text-button-green">어떻게 버틸 수</span>
+              <span className="font-bold text-button-green">
+                어떻게 버틸 수
+              </span>
               <span> 있을까요?</span>
             </>
           )}
@@ -61,7 +70,7 @@ const PreviewCard = ({ tone }: PreviewCardProps) => {
 
       <div
         className={`absolute left-1/2 top-[88px] h-[214px] w-[566px] -translate-x-1/2 overflow-hidden rounded-2xl ${
-          isBlue ? 'bg-card-background-blue' : 'bg-card-background-green'
+          isBlue ? "bg-card-background-blue" : "bg-card-background-green"
         }`}
       >
         <img
@@ -78,11 +87,15 @@ const PreviewCard = ({ tone }: PreviewCardProps) => {
                 <span className="typo-figure">일</span>
               </p>
             </div>
-            <p className="typo-card-body">평균 97일 내 승인되며, 실제 지급 시점은 약 111일입니다.</p>
+            <p className="typo-card-body">
+              평균 97일 내 승인되며, 실제 지급 시점은 약 111일입니다.
+            </p>
           </div>
         ) : (
           <div className="absolute left-5 top-5 flex w-[504px] flex-col gap-4 text-text-dark-gray">
-            <p className="typo-card-body">약 60일 후 자금이 부족할 것으로 예상됩니다.</p>
+            <p className="typo-card-body">
+              약 60일 후 자금이 부족할 것으로 예상됩니다.
+            </p>
             <p className="typo-card-body">
               <span className="font-semibold text-text-green">지원금</span>
               <span> + </span>
@@ -96,12 +109,14 @@ const PreviewCard = ({ tone }: PreviewCardProps) => {
       <div
         className={`absolute left-5 top-[88px] flex h-[214px] w-[566px] flex-col items-center justify-center gap-2.5 rounded-2xl backdrop-blur-[5px] ${
           isBlue
-            ? 'bg-[linear-gradient(180deg,#f2f6fe_5.108%,rgba(242,246,254,0.6)_87.794%,rgba(242,246,254,0.4)_121.56%)]'
-            : 'bg-[linear-gradient(180deg,#edf8f7_4.202%,rgba(237,248,247,0.6)_53.978%,rgba(237,248,247,0.4)_100%)]'
+            ? "bg-[linear-gradient(180deg,#f2f6fe_5.108%,rgba(242,246,254,0.6)_87.794%,rgba(242,246,254,0.4)_121.56%)]"
+            : "bg-[linear-gradient(180deg,#edf8f7_4.202%,rgba(237,248,247,0.6)_53.978%,rgba(237,248,247,0.4)_100%)]"
         }`}
       >
         <LockIcon />
-        <p className="typo-caption-semibold text-text-gray">정보 입력 후 확인할 수 있습니다.</p>
+        <p className="typo-caption-semibold text-text-gray">
+          정보 입력 후 확인할 수 있습니다.
+        </p>
       </div>
     </section>
   );
@@ -112,11 +127,15 @@ const MainPage = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <main className="relative min-h-[839px] overflow-hidden bg-background-blue">
         <div className="absolute left-0 top-[-147px] h-[542px] w-[1512px]">
           <div className="absolute inset-[-0.74%_-0.26%]">
-            <img src={heroBackground} alt="" className="block size-full max-w-none" />
+            <img
+              src={heroBackground}
+              alt=""
+              className="block size-full max-w-none"
+            />
           </div>
         </div>
 
@@ -129,7 +148,7 @@ const MainPage = () => {
         <div className="absolute left-[120px] top-[calc(50%+22px)] flex w-[1272px] -translate-y-1/2 flex-col gap-[68px]">
           <section className="flex h-[247px] w-[795px] flex-col items-start gap-9">
             <h1 className="typo-hero-title whitespace-nowrap text-text-black">
-              산재 승인까지, 소득 공백을{' '}
+              산재 승인까지, 소득 공백을{" "}
               <span className="text-hero-text-blue">함께 대비합니다</span>
             </h1>
 

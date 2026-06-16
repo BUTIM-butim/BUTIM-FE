@@ -1,16 +1,17 @@
 export const ROUTES = {
-  MAIN: '/',
-  LOGIN: '/login',
-  SIGNUP: '/signup',
-  USER_EDIT: '/user/edit',
-  ACCIDENT: '/accident',
-  PERIOD: '/period',
-  FINANCIAL_INFO: '/financial-info',
-  FINANCIAL_SUPPORT_INFO: '/financial-info/support',
-  FINANCIAL: '/financial',
-  STRATEGY: '/strategy',
-  STRATEGY_RECOMMEND: '/strategy/recommend',
-  STRATEGY_RESULT: '/strategy/result',
-  BUTTON_TEST: '/dev/button-test',
-  MODAL_TEST: '/dev/modal-test',
+  MAIN: "/",
+  LOGIN: "/login",
+  SIGNUP: "/signup",
+  USER_EDIT: "/user/edit",
+
+  ACCIDENT: "/accident",
+  PERIOD: "/period",
+  FINANCIAL: "/financial",
+
+  FINANCIAL_INFO: "/financial-info",
+  FINANCIAL_SUPPORT_INFO: "/financial-info/support",
+
+  STRATEGY: "/strategy",
+  STRATEGY_RECOMMEND: "/strategy/recommend",
+  STRATEGY_RESULT: "/strategy/result",
 } as const;
