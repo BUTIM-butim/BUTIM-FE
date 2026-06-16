@@ -4,7 +4,8 @@ type CheckIconVariant =
   | "smallWarning"
   | "large"
   | "strategyBlue"
-  | "strategyGreen";
+  | "strategyGreen"
+  | "plainBlue";
 
 type CheckIconProps = {
   variant?: CheckIconVariant;
@@ -153,6 +154,28 @@ const CheckIcon = ({
             strokeLinejoin="round"
           />
         )}
+      </svg>
+    );
+  }
+
+  if (variant === "plainBlue") {
+    return (
+      <svg
+        className={className}
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M3.5 10.5L8 15L16.5 5.5"
+          stroke="var(--color-button-blue)"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     );
   }
