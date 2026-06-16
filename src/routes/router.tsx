@@ -7,6 +7,7 @@ import SignupPage from '../pages/auth/SignupPage';
 import ButtonTestPage from '../pages/dev/ButtonTestPage';
 import ModalTestPage from '../pages/dev/ModalTestPage';
 import UserEditPage from '../pages/user/UserEditPage';
+import AccidentInfoPage from '../pages/accident/AccidentInfoPage';
 import FinancialInfoPage from '../pages/financial/FinancialInfoPage';
 import FinancialSupportInfoPage from '../pages/financial/FinancialSupportInfoPage';
 import StrategyRecommendationPage from '../pages/strategy/StrategyRecommendationPage';
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
   {
     path: ROUTES.USER_EDIT,
     element: <UserEditPage />,
+  },
+  {
+    path: ROUTES.ACCIDENT,
+    element: <AccidentInfoPage />,
   },
   {
     path: ROUTES.FINANCIAL_INFO,
