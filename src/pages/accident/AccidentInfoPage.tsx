@@ -33,13 +33,6 @@ const initialFormData: AccidentFormData = {
   additionalInfo: '',
 };
 
-const SECTION_TITLES: Record<AccidentSubStep, string> = {
-  basic: '기본 정보',
-  accident: '사고 정보',
-  work: '근무 정보',
-  additional: '추가 정보',
-};
-
 const SIDEBAR_SUB_SECTION_MAP: Record<AccidentSubStep, SidebarSubSectionId> = {
   basic: 'basic',
   accident: 'accident',
