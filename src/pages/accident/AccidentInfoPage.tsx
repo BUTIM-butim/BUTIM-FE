@@ -194,7 +194,7 @@ export default function AccidentInfoPage() {
           additionalInfo: formData.additionalInfo,
         });
 
-        navigate(ROUTES.PERIOD);
+        navigate(ROUTES.PERIOD, { state: { fromFlow: true } });
       } catch (e) {
         setError(e instanceof Error ? e.message : '저장에 실패했습니다.');
       } finally {
