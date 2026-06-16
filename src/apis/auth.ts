@@ -76,16 +76,10 @@ export const postPhoneVerify = async (data: PhoneVerifyRequest) => {
   return unwrapBaseResponse<string>(response.data);
 };
 
-export const postLogout = async () => {
-  const response =
-    await axiosInstance.post<BaseResponse<string>>("/api/auth/logout");
-
-  return unwrapBaseResponse<string>(response.data);
+export const postLogout = async (): Promise<void> => {
+  await axiosInstance.post("/api/auth/logout");
 };
 
-export const deleteWithdraw = async () => {
-  const response =
-    await axiosInstance.delete<BaseResponse<string>>("/api/auth/withdraw");
-
-  return unwrapBaseResponse<string>(response.data);
+export const deleteWithdraw = async (): Promise<void> => {
+  await axiosInstance.delete("/api/auth/withdraw");
 };

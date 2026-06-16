@@ -10,7 +10,7 @@ type BaseResponse<T> = {
   message?: string;
 };
 
-export type TokenResponse = {
+type TokenResponse = {
   accessToken: string;
   refreshToken: string;
 };

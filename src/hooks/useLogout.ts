@@ -5,13 +5,7 @@ import { postLogout } from "../apis/auth";
 import { clearTokens } from "../apis/axiosInstance";
 import { ROUTES } from "../constants/routes";
 
-type UseLogoutOptions = {
-  redirectPath?: string;
-};
-
-export const useLogout = ({
-  redirectPath = ROUTES.MAIN,
-}: UseLogoutOptions = {}) => {
+export const useLogout = () => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -22,19 +16,23 @@ export const useLogout = ({
 
     try {
       setIsLoggingOut(true);
+
       await postLogout();
     } catch {
-      // 서버 로그아웃 요청이 실패해도 클라이언트 로그아웃은 진행
+      /*
+       * 서버 로그아웃 요청이 실패해도
+       * 브라우저에 저장된 로그인 정보는 삭제한다.
+       */
     } finally {
       clearTokens();
 
-      navigate(redirectPath, {
+      navigate(ROUTES.MAIN, {
         replace: true,
       });
 
       setIsLoggingOut(false);
     }
-  }, [isLoggingOut, navigate, redirectPath]);
+  }, [isLoggingOut, navigate]);
 
   return {
     logout,

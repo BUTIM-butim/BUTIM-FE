@@ -1,7 +1,13 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 
 import logoFullLogin from "../../assets/logo-full-login.svg";
-import { postPhoneSend, postPhoneVerify, postSignup } from "../../apis/auth";
+import {
+  postLogin,
+  postPhoneSend,
+  postPhoneVerify,
+  postSignup,
+} from "../../apis/auth";
+import { saveTokens } from "../../apis/axiosInstance";
 
 import TermsAgreementModal from "./TermsAgreementModal";
 import SignupCompleteCard from "./SignupCompleteCard";
@@ -49,7 +55,9 @@ type ErrorSlotProps = {
 };
 
 const REQUIRED_TERMS: TermKey[] = ["privacy", "service", "age"];
+
 const ALL_TERMS: TermKey[] = ["privacy", "service", "age", "sms"];
+
 const EMPTY_TERMS: TermKey[] = [];
 
 const TERM_CAPTION_LABELS: Record<TermKey, string> = {
@@ -92,10 +100,13 @@ const SignupCard = ({
 
   const [phone, setPhone] = useState(initialPhone);
   const [verifiedPhone, setVerifiedPhone] = useState(initialPhone);
+
   const [verificationCode, setVerificationCode] = useState("");
 
   const [isVerificationSent, setIsVerificationSent] = useState(false);
+
   const [isPhoneVerified, setIsPhoneVerified] = useState(Boolean(initialPhone));
+
   const [hasPhoneBeenChanged, setHasPhoneBeenChanged] = useState(false);
 
   const [selectedTerms, setSelectedTerms] = useState<TermKey[]>(initialTerms);
@@ -107,7 +118,9 @@ const SignupCard = ({
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const [errors, setErrors] = useState<SignupErrors>({});
+
   const [isSignupCompleted, setIsSignupCompleted] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isAllRequiredTermsChecked = REQUIRED_TERMS.every((term) =>
@@ -261,7 +274,11 @@ const SignupCard = ({
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
-    setErrors((prev) => ({ ...prev, name: undefined }));
+
+    setErrors((prev) => ({
+      ...prev,
+      name: undefined,
+    }));
   };
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -379,6 +396,7 @@ const SignupCard = ({
         ...prev,
         verificationCode: "전화번호를 입력해주세요.",
       }));
+
       return;
     }
 
@@ -387,6 +405,7 @@ const SignupCard = ({
         ...prev,
         verificationCode: "올바른 전화번호 형식이 아닙니다.",
       }));
+
       return;
     }
 
@@ -437,7 +456,9 @@ const SignupCard = ({
 
   const handleConfirmTermsModal = (nextSelectedTerms: TermKey[]) => {
     setSelectedTerms(nextSelectedTerms);
+
     setIsTermsSelectedFromModal(nextSelectedTerms.length > 0);
+
     setIsTermsModalOpen(false);
 
     if (REQUIRED_TERMS.every((term) => nextSelectedTerms.includes(term))) {
@@ -497,7 +518,9 @@ const SignupCard = ({
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
+
     const trimmedPasswordConfirm = passwordConfirm.trim();
+
     const trimmedPhone = phone.trim();
 
     const phoneNumber = trimmedPhone.replaceAll("-", "");
@@ -509,10 +532,19 @@ const SignupCard = ({
       setIsSubmitting(true);
 
       if (shouldVerifyPhone) {
-        await postPhoneVerify({
-          phoneNumber,
-          code: verificationCode.trim(),
-        });
+        try {
+          await postPhoneVerify({
+            phoneNumber,
+            code: verificationCode.trim(),
+          });
+        } catch {
+          setErrors((prev) => ({
+            ...prev,
+            verificationCode: "인증번호가 일치하지 않습니다.",
+          }));
+
+          return;
+        }
 
         setIsPhoneVerified(true);
         setIsVerificationSent(false);
@@ -541,16 +573,27 @@ const SignupCard = ({
       }
 
       await postSignup(submitValues);
-      setIsSignupCompleted(true);
-    } catch {
-      if (shouldVerifyPhone) {
-        setErrors((prev) => ({
-          ...prev,
-          verificationCode: "인증번호가 일치하지 않습니다.",
-        }));
-        return;
+
+      try {
+        const loginResult = await postLogin({
+          email: trimmedEmail,
+          password: trimmedPassword,
+        });
+
+        saveTokens({
+          accessToken: loginResult.accessToken,
+          refreshToken: loginResult.refreshToken,
+        });
+
+        localStorage.setItem("userName", trimmedName);
+      } catch {
+        alert(
+          "회원가입은 완료되었지만 자동 로그인에 실패했습니다. 로그인 페이지에서 다시 로그인해주세요.",
+        );
       }
 
+      setIsSignupCompleted(true);
+    } catch {
       alert(
         isEditMode
           ? "회원 정보 수정에 실패했습니다. 다시 시도해주세요."

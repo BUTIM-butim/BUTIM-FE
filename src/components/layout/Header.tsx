@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import logoFull from '../../assets/logo-full-login.svg';
-import GoIcon from '../common/icons/GoIcon';
-import { ROUTES } from '../../constants/routes';
+import logoFull from "../../assets/logo-full-login.svg";
+import { ROUTES } from "../../constants/routes";
+import GoIcon from "../common/icons/GoIcon";
 
 type InputProgress = {
   lastPath?: string;
@@ -27,16 +27,18 @@ type NavItemProps = {
   onClick: () => void;
 };
 
-const INPUT_PROGRESS_STORAGE_KEY = 'butim-input-progress';
+const INPUT_PROGRESS_STORAGE_KEY = "butim-input-progress";
 
 const cn = (...classes: Array<string | false | undefined>) => {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 };
 
 const getInputProgress = (): InputProgress | null => {
   const raw = localStorage.getItem(INPUT_PROGRESS_STORAGE_KEY);
 
-  if (!raw) return null;
+  if (!raw) {
+    return null;
+  }
 
   try {
     return JSON.parse(raw) as InputProgress;
@@ -52,15 +54,11 @@ const getNextInputPath = () => {
     return progress.lastPath;
   }
 
-  return '/accident';
+  return "/accident";
 };
 
 const Logo = () => (
-  <img
-    src={logoFull}
-    alt="버팀"
-    className="h-[30px] w-auto shrink-0"
-  />
+  <img src={logoFull} alt="버팀" className="h-[30px] w-auto shrink-0" />
 );
 
 const NotificationButton = ({
@@ -88,6 +86,7 @@ const NotificationButton = ({
           strokeLinecap="round"
           strokeLinejoin="round"
         />
+
         <path
           d="M6.15 15C6.45 15.48 6.9 15.72 7.5 15.72C8.1 15.72 8.55 15.48 8.85 15"
           stroke="currentColor"
@@ -111,8 +110,8 @@ const NavItem = ({ label, active = false, onClick }: NavItemProps) => (
   >
     <span
       className={cn(
-        'w-full transition-colors group-hover:text-navbar-blue',
-        active ? 'text-navbar-blue' : 'text-text-black',
+        "w-full transition-colors group-hover:text-navbar-blue",
+        active ? "text-navbar-blue" : "text-text-black",
       )}
     >
       {label}
@@ -120,8 +119,8 @@ const NavItem = ({ label, active = false, onClick }: NavItemProps) => (
 
     <span
       className={cn(
-        'h-[3px] w-full rounded-full transition-colors group-hover:bg-button-blue',
-        active ? 'bg-button-blue' : 'bg-transparent',
+        "h-[3px] w-full rounded-full transition-colors group-hover:bg-button-blue",
+        active ? "bg-button-blue" : "bg-transparent",
       )}
     />
   </button>
@@ -129,13 +128,14 @@ const NavItem = ({ label, active = false, onClick }: NavItemProps) => (
 
 export default function Header({
   isLoggedIn = false,
-  userName = '홍길동',
+  userName = "사용자",
   hasNotification = false,
   onLogout,
   onWithdraw,
 }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -146,23 +146,41 @@ export default function Header({
       }
     };
 
-    document.addEventListener('pointerdown', handlePointerDown);
-    return () => document.removeEventListener('pointerdown', handlePointerDown);
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
   }, []);
 
   const pathname = location.pathname;
 
   const isInfoActive =
-    pathname.startsWith('/accident') ||
-    pathname.startsWith('/financial') ||
-    pathname.startsWith('/information') ||
-    pathname === '/strategy/recommend';
+    pathname.startsWith("/accident") ||
+    pathname.startsWith("/financial") ||
+    pathname.startsWith("/information") ||
+    pathname === "/strategy/recommend";
 
   const isPeriodActive =
-    pathname.startsWith('/period') || pathname.startsWith('/approval');
+    pathname.startsWith("/period") || pathname.startsWith("/approval");
 
   const isStrategyActive =
-    pathname === '/strategy/result' || pathname.startsWith('/strategy/result/');
+    pathname === "/strategy/result" || pathname.startsWith("/strategy/result/");
+
+  const handleUserEdit = () => {
+    setIsUserMenuOpen(false);
+    navigate(ROUTES.USER_EDIT);
+  };
+
+  const handleLogout = () => {
+    setIsUserMenuOpen(false);
+    onLogout?.();
+  };
+
+  const handleWithdraw = () => {
+    setIsUserMenuOpen(false);
+    onWithdraw?.();
+  };
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50 h-[64px] bg-white shadow-[0_2px_13.4px_1px_rgba(0,0,0,0.04)]">
@@ -182,11 +200,13 @@ export default function Header({
             active={isInfoActive}
             onClick={() => navigate(getNextInputPath())}
           />
+
           <NavItem
             label="예상 기간"
             active={isPeriodActive}
             onClick={() => navigate(ROUTES.PERIOD)}
           />
+
           <NavItem
             label="맞춤 전략"
             active={isStrategyActive}
@@ -200,20 +220,24 @@ export default function Header({
             className="flex shrink-0 items-center gap-[8px]"
           >
             <NotificationButton hasNotification={hasNotification} />
+
             <button
               type="button"
-              onClick={() => setIsUserMenuOpen((isOpen) => !isOpen)}
+              onClick={() => {
+                setIsUserMenuOpen((isOpen) => !isOpen);
+              }}
               className={cn(
-                'flex cursor-pointer items-center justify-center gap-[4px] rounded-full px-[12px] py-[6px] typo-navbar-button',
-                isUserMenuOpen ? 'text-navbar-blue' : 'text-text-black',
+                "flex cursor-pointer items-center justify-center gap-[4px] rounded-full px-[12px] py-[6px] typo-navbar-button",
+                isUserMenuOpen ? "text-navbar-blue" : "text-text-black",
               )}
               aria-expanded={isUserMenuOpen}
               aria-haspopup="menu"
             >
               <span className="whitespace-nowrap">{userName}님</span>
+
               <GoIcon
                 size="small"
-                direction={isUserMenuOpen ? 'up' : 'down'}
+                direction={isUserMenuOpen ? "up" : "down"}
                 className="shrink-0"
               />
             </button>
@@ -224,27 +248,32 @@ export default function Header({
                 role="menu"
               >
                 <div className="h-px w-full bg-line-gray opacity-40" />
+
                 <button
                   type="button"
-                  onClick={() => navigate(ROUTES.USER_EDIT)}
+                  onClick={handleUserEdit}
                   className="flex cursor-pointer items-center justify-center rounded-[6px] px-[12px] py-[6px] typo-popup-caption text-text-black"
                   role="menuitem"
                 >
                   정보 수정
                 </button>
+
                 <div className="h-px w-full bg-line-gray opacity-40" />
+
                 <button
                   type="button"
-                  onClick={onLogout}
+                  onClick={handleLogout}
                   className="flex cursor-pointer items-center justify-center rounded-[6px] px-[12px] py-[6px] typo-popup-caption text-text-black"
                   role="menuitem"
                 >
                   로그아웃
                 </button>
+
                 <div className="h-px w-full bg-line-gray opacity-40" />
+
                 <button
                   type="button"
-                  onClick={onWithdraw}
+                  onClick={handleWithdraw}
                   className="flex cursor-pointer items-center justify-center rounded-[6px] px-[12px] py-[6px] typo-popup-caption text-text-black"
                   role="menuitem"
                 >
@@ -262,6 +291,7 @@ export default function Header({
             >
               로그인
             </button>
+
             <button
               type="button"
               onClick={() => navigate(ROUTES.SIGNUP)}
